@@ -1,8 +1,11 @@
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-"use client";
-
-export default function Premium() {
-  return <div>Premium – página em construção.</div>;
+export default function PremiumPage() {
+  return (
+    <main style={{ padding: 24 }}>
+      <h1>Premium</h1>
+      <p>Página em construção.</p>
+    </main>
+  );
 }
