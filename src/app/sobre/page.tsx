@@ -1,8 +1,11 @@
-export default function Sobre() {
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+export default function SobrePage() {
   return (
-    <div>
+    <main style={{ padding: 24 }}>
       <h1>Sobre</h1>
-      <p>R de Rádio – by T de Trips. Página em construção.</p>
-    </div>
+      <p>Página em construção.</p>
+    </main>
   );
 }
