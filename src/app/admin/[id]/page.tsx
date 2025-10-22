@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { supabase } from '@/lib/supabaseClient';
 import { useEffect, useState } from 'react';
 import type { StationStream } from '@/types';
