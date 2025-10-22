@@ -1,8 +1,11 @@
-export default function Privacidade() {
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+export default function PrivacidadePage() {
   return (
-    <div>
+    <main style={{ padding: 24 }}>
       <h1>Política de Privacidade</h1>
       <p>Página em construção.</p>
-    </div>
+    </main>
   );
 }
