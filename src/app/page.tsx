@@ -20,7 +20,7 @@ export default async function Home() {
 
   const { data: stations } = await supabase
     .from("stations")
-    .select("id,name,city,country")
+    .select("id,name,city,country, slug")
     .order("name", { ascending: true })
     .returns<Station[]>();
 
