@@ -26,20 +26,22 @@ export async function GET(
       return NextResponse.json({ error: "Station not found" }, { status: 404 });
     }
 
-    // 2) Busca stream principal (prioriza is_primary=true se existir)
+    // 2) Busca um stream disponível (sem depender de is_primary)
+    // Opcional: se você tiver coluna created_at, pode adicionar .order("created_at", { ascending: false })
     const { data: streams, error: errStream } = await sb
       .from("station_streams")
-      .select("url, is_primary")
+      .select("url")
       .eq("station_id", station.id)
-      .order("is_primary", { ascending: false })
       .limit(1);
 
     if (errStream || !streams || streams.length === 0) {
       return NextResponse.json({ error: "Stream not found" }, { status: 404 });
     }
 
-    const stream = streams[0];
-    return NextResponse.json({ url: stream.url }, { headers: { "Cache-Control": "no-store" } });
+    return NextResponse.json(
+      { url: streams[0].url },
+      { headers: { "Cache-Control": "no-store" } }
+    );
   } catch (e: any) {
     console.error(e);
     return NextResponse.json({ error: "Internal error" }, { status: 500 });
