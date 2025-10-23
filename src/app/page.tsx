@@ -19,20 +19,25 @@ function getSupabaseServer() {
 export default async function Home() {
   const supabase = getSupabaseServer();
 
-  const { data: stations } = await supabase
+  const { data: stations, error } = await supabase
     .from("stations")
-    .select("id,name,city,country, slug")
+    .select("id,name,city,country,slug")
     .order("name", { ascending: true })
     .returns<Station[]>();
 
-  const countries = Array.from(
-    new Set((stations || []).map(s => (s.country || "").trim()).filter(Boolean))
-  ).sort();
+  if (error) {
+    return (
+      <main style={{ maxWidth: 960, margin: "0 auto", padding: "24px 16px" }}>
+        <h1>R de Rádio – by T de Trips</h1>
+        <p style={{ color: "#c00" }}>Erro ao carregar estações: {error.message}</p>
+      </main>
+    );
+  }
 
   return (
     <main style={{ maxWidth: 960, margin: "0 auto", padding: "24px 16px" }}>
       <h1 style={{ marginBottom: 8 }}>R de Rádio – by T de Trips</h1>
-      <p style={{ color: "#666", marginBottom: 24 }}>
+      <p style={{ color: "#666", marginBottom: 16 }}>
         Descubra estações e toque instantaneamente.
       </p>
 
@@ -87,7 +92,6 @@ function Filters() {
         style={{ padding: "10px 12px", borderRadius: 6, border: "1px solid #ddd" }}
       >
         <option value="">Todos os países</option>
-        {/* dica: você pode gerar as opções dinamicamente do servidor se preferir */}
         <option value="Brasil">Brasil</option>
         <option value="Portugal">Portugal</option>
       </select>
@@ -98,18 +102,10 @@ function Filters() {
 function StationCard({
   station,
 }: {
-  station: {
-    id: string;
-    name: string;
-    city: string | null;
-    country: string | null;
-    slug?: string | null;
-  };
+  station: { id: string; name: string; city: string | null; country: string | null; slug?: string | null };
 }) {
   const subtitle = [station.city, station.country].filter(Boolean).join(" • ");
   const searchKey = (station.name + " " + subtitle).toLowerCase();
-
-  // Se existir slug usa /station/slug; senão faz fallback para /station/id
   const href = `/station/${station.slug || station.id}`;
 
   return (
@@ -128,11 +124,18 @@ function StationCard({
     >
       <div style={{ fontWeight: 700 }}>{station.name}</div>
       {subtitle ? <div style={{ color: "#666", fontSize: 14 }}>{subtitle}</div> : null}
-
-      {/* Pode usar <Link> do next ou <a>. Aqui vai <a> simples para zero dependências */}
-      <a href={href} style={{ marginTop: 4, color: "#0c63e4" }}>
+      <Link
+        href={href}
+        style={{
+          marginTop: 4,
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 8,
+          color: "#0c63e4",
+        }}
+      >
         Ouvir ▸
-      </a>
+      </Link>
     </div>
   );
 }
