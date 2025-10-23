@@ -56,7 +56,7 @@ function SiteHeader() {
             }}
           />
           <span style={{ fontWeight: 800, color: "#111", letterSpacing: 0.2 }}>
-            R de Rádio
+            R de Rádio (teste)
           </span>
         </Link>
 
