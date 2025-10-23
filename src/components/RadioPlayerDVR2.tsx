@@ -18,7 +18,7 @@ export default function RadioPlayerDVR2({ liveUrl, dvrUrl, autoPlay = false }: P
   const [canSeek, setCanSeek] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Calcula a janela do DVR a partir dos fragments (API estável no hls.js 1.5.x)
+  // Calcula a janela do DVR a partir dos fragments (compatível com hls.js 1.5.x)
   function computeWindowFromFragments(details: any) {
     const frags = Array.isArray(details?.fragments) ? details.fragments : [];
     if (!frags.length) return null;
@@ -113,4 +113,57 @@ export default function RadioPlayerDVR2({ liveUrl, dvrUrl, autoPlay = false }: P
   // Controles de timeshift
   const seekBack = (minutes: number) => {
     if (!canSeek || !hlsRef.current) return;
-    const media
+    const media = hlsRef.current.media;
+    if (!media) return;
+    try {
+      media.currentTime = Math.max(0, (media.currentTime || 0) - minutes * 60);
+    } catch {}
+  };
+
+  const goLive = () => {
+    if (!hlsRef.current) return;
+    const hls: any = hlsRef.current as any;
+    const details: any = hls.levelDetails || hls.currentLevelDetails || null;
+
+    if (details && Array.isArray(details.fragments) && details.fragments.length) {
+      const last = details.fragments[details.fragments.length - 1];
+      const end =
+        typeof last?.start === "number" && typeof last?.duration === "number"
+          ? last.start + last.duration
+          : null;
+      const media = hls.media;
+      if (media && typeof end === "number") {
+        try { media.currentTime = end - 1; } catch {}
+      }
+    }
+  };
+
+  return (
+    <div style={{ display: "grid", gap: 12 }}>
+      <audio ref={audioRef} controls style={{ width: "100%" }} />
+
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        {dvrUrl ? (
+          usingDvr ? (
+            <>
+              <button onClick={() => seekBack(10)} disabled={!canSeek}>⏪ 10 min</button>
+              <button onClick={() => seekBack(30)} disabled={!canSeek}>⏪ 30 min</button>
+              <button onClick={goLive} disabled={!canSeek}>Live</button>
+              <button onClick={() => setUsingDvr(false)}>Voltar ao Ao Vivo</button>
+            </>
+          ) : (
+            <button onClick={() => setUsingDvr(true)}>Ativar Timeshift</button>
+          )
+        ) : null}
+
+        {windowSec ? (
+          <span style={{ color: "#666" }}>
+            Janela DVR ~ {Math.round(windowSec / 60)} min
+          </span>
+        ) : null}
+
+        {loading && <span>Carregando...</span>}
+      </div>
+    </div>
+  );
+}
