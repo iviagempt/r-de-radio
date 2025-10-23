@@ -44,20 +44,22 @@ export default function GlobalRadioPlayer() {
       setErrorMsg(null);
 
       try {
-        // 1) Busca stream
+        // Buscar stream principal
         const res = await fetch(`/api/stations/${station.slug || station.id}/primary-stream`, { cache: "no-store" });
         if (!res.ok) throw new Error("Falha ao obter stream");
         const data: Stream = await res.json();
         const url = data.url;
 
-        // 2) Desanexar HLS anterior
+        // Limpar HLS anterior
         if (hlsRef.current) {
-          try { hlsRef.current.destroy(); } catch {}
+          try {
+            hlsRef.current.destroy();
+          } catch {}
           hlsRef.current = null;
         }
         audio.src = "";
 
-        // 3) Detecta HLS e prepara fonte
+        // Detectar HLS
         const isHls = url.includes(".m3u8");
         if (isHls && audio.canPlayType("application/vnd.apple.mpegURL") === "") {
           const Hls = await ensureHls();
@@ -75,10 +77,11 @@ export default function GlobalRadioPlayer() {
             throw new Error("HLS não suportado");
           }
         } else {
+          // MP3/AAC direto
           audio.src = url;
         }
 
-        // 4) Autoplay imediato, ainda dentro do fluxo iniciado por clique
+        // Autoplay (dentro do clique original, pois a função é disparada via onClick)
         await audio.play();
         setPlaying(true);
       } catch (e: any) {
@@ -93,24 +96,46 @@ export default function GlobalRadioPlayer() {
     return () => {
       window.__playStation = undefined;
       if (hlsRef.current) {
-        try { hlsRef.current.destroy(); } catch {}
+        try {
+          hlsRef.current.destroy();
+        } catch {}
         hlsRef.current = null;
       }
     };
   }, []);
 
   return (
-    <div style={{ position: "sticky", top: 0, zIndex: 20, background: "#fff", borderBottom: "1px solid #eee" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "10px 12px", display: "flex", alignItems: "center", gap: 10 }}>
+    <div className="player" style={{ position: "sticky", top: 0, zIndex: 20 }}>
+      <div
+        style={{
+          maxWidth: 1100,
+          margin: "0 auto",
+          padding: "10px 12px",
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+        }}
+      >
+        {/* Logo da estação atual */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         {current?.logo_url ? (
-          <img src={current.logo_url} alt={current.name} width={36} height={36} style={{ borderRadius: 6, objectFit: "contain" }} />
+          <img
+            src={current.logo_url}
+            alt={current.name}
+            width={36}
+            height={36}
+            style={{ borderRadius: 6, objectFit: "contain" }}
+          />
         ) : (
           <div style={{ width: 36, height: 36, borderRadius: 6, background: "#f2f2f2" }} />
         )}
 
+        {/* Título + controles */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontWeight: 600, fontSize: 14, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          <div
+            className="title"
+            style={{ fontWeight: 600, fontSize: 14, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+          >
             {current ? current.name : "Selecione uma rádio"}
           </div>
           <audio
@@ -124,14 +149,27 @@ export default function GlobalRadioPlayer() {
           {errorMsg && <div style={{ color: "#c00", fontSize: 12 }}>{errorMsg}</div>}
         </div>
 
+        {/* Botão Play/Pause */}
         <button
           onClick={() => {
             const a = audioRef.current;
             if (!a) return;
-            if (a.paused) a.play().then(() => setPlaying(true)).catch(() => {});
-            else { a.pause(); setPlaying(false); }
+            if (a.paused) {
+              a.play().then(() => setPlaying(true)).catch(() => {});
+            } else {
+              a.pause();
+              setPlaying(false);
+            }
           }}
-          style={{ padding: "8px 10px", borderRadius: 8, background: "#0c63e4", color: "#fff", border: 0, fontSize: 14 }}
+          style={{
+            padding: "8px 10px",
+            borderRadius: 8,
+            background: "#ffc600",
+            color: "#1a1a1a",
+            border: 0,
+            fontSize: 14,
+            fontWeight: 700,
+          }}
         >
           {playing ? "Pausar" : "Tocar"}
         </button>
@@ -139,9 +177,3 @@ export default function GlobalRadioPlayer() {
     </div>
   );
 }
-// no container root do player
-<div className="player" style={{ position: "sticky", top: 0, zIndex: 20 }}>
-  <div style={{ maxWidth: 1100, margin: "0 auto", padding: "10px 12px", display: "flex", alignItems: "center", gap: 10 }}>
-    {/* resto */}
-  </div>
-</div>
