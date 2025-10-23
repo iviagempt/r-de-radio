@@ -36,10 +36,7 @@ export default function GlobalRadioPlayer() {
       setLoading(true);
 
       try {
-        const res = await fetch(
-  `/api/stations/${station.slug || station.id}/primary-stream`,
-  { cache: "no-store" }
-);
+        const res = await fetch(`/api/stations/${station.slug || station.id}/primary-stream`, { cache: "no-store" });
         if (!res.ok) throw new Error("Falha ao obter stream");
         const data: Stream = await res.json();
         const url = data.url;
