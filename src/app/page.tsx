@@ -34,3 +34,31 @@ export default async function Home() {
     </>
   );
 }
+import AdSlot from "@/components/AdSlot";
+
+export default async function Home() {
+  // ... seu fetch
+  return (
+    <>
+      {/* Player global */}
+      {/* ... */}
+
+      <main style={{ padding: 16, maxWidth: 1100, margin: "0 auto" }}>
+        {/* Banner no topo da Home */}
+        <AdSlot
+          slot={process.env.NEXT_PUBLIC_ADSENSE_HOME_TOP_SLOT!}
+          style={{ display: "block", textAlign: "center", minHeight: 90, margin: "10px 0 16px" }}
+        />
+
+        {/* Grade de rádios */}
+        {/* ... */}
+
+        {/* Banner no final da Home */}
+        <AdSlot
+          slot={process.env.NEXT_PUBLIC_ADSENSE_HOME_BOTTOM_SLOT!}
+          style={{ display: "block", textAlign: "center", minHeight: 90, margin: "16px 0 10px" }}
+        />
+      </main>
+    </>
+  );
+}
