@@ -1,45 +1,46 @@
-/* Cards (logos das rádios) — sem borda cinza e um pouco menores */
+/* Fundo com gradiente preto bonito */
+body {
+  background:
+    radial-gradient(1200px 600px at 85% -10%, rgba(255, 198, 0, 0.18), transparent 60%),
+    radial-gradient(900px 500px at -10% 85%, rgba(255, 198, 0, 0.10), transparent 60%),
+    linear-gradient(160deg, #111 0%, #1a1a1a 60%, #0f0f0f 100%);
+  color: var(--text, #f2f2f2);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Grid — fixo 4 por linha */
+.grid-logos {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+/* Cards sem borda, leves */
 .radio-card {
   background: rgba(255, 255, 255, 0.06);
-  /* border: 1px solid var(--border);  REMOVIDO */
-  border: 0; /* sem linha ao redor */
+  border: 0;
   border-radius: 14px;
-  padding: 10px; /* um pouco menor */
+  padding: 10px;
   aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform .08s ease, box-shadow .2s ease, outline-color .15s ease;
-  outline: 1px solid transparent; /* realce leve no hover */
+  transition: transform .08s ease, box-shadow .2s ease;
 }
 .radio-card:hover {
   transform: translateY(-2px);
-  /* leve glow amarelo, sem linha */
-  box-shadow: 0 8px 24px rgba(0,0,0,0.25), 0 0 0 2px rgba(255, 198, 0, 0.20) inset;
-  outline-color: rgba(255, 198, 0, 0.35);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25), 0 0 0 2px rgba(255, 198, 0, 0.15) inset;
 }
-
-/* Grid — 4 a 5 por linha conforme largura */
-.grid-logos {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr); /* base: 4 por linha */
-  gap: 12px;
-}
-@media (min-width: 900px) {
-  .grid-logos {
-    grid-template-columns: repeat(5, 1fr); /* 5 por linha em telas maiores */
-  }
-}
-
-/* Imagens dos logos — levemente menores dentro do card */
 .radio-card img {
-  max-width: 80%;
-  max-height: 80%;
+  max-width: 78%;
+  max-height: 78%;
   object-fit: contain;
 }
 
-/* Player mais fino e elegante */
+/* Player fino e elegante */
 .player {
   background: rgba(26, 26, 26, 0.6);
   backdrop-filter: blur(10px);
@@ -49,33 +50,29 @@
 .player-inner {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 6px 12px; /* mais fino */
+  padding: 6px 12px;
+  display: grid;
+  grid-template-columns: auto 1fr; /* logo grande à esquerda, controles à direita */
+  align-items: center;
+  gap: 14px;
+  min-height: 58px;
+}
+
+/* Logo grande sobre o tocador (visual) */
+.player-logo {
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-height: 54px; /* altura compacta */
+  justify-content: center;
+}
+.player-logo img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.06);
 }
 
-/* Botão de favoritos no player */
-.player .fav-btn {
-  background: transparent;
-  border: 0;
-  color: #fff;
-  padding: 6px;
-  border-radius: 8px;
-}
-.player .fav-btn.active {
-  color: #ffc600; /* amarelo quando favoritado */
-}
-
-/* Header compacto com “RDR” */
-.header-title {
-  font-weight: 800;
-  font-size: 16px;
-  letter-spacing: 0.5px;
-}
-
-/* Splash inicial (brand intro) */
+/* Splash com animação scale-in */
 .splash {
   position: fixed;
   inset: 0;
@@ -90,9 +87,12 @@
 .splash-inner {
   text-align: center;
   color: #fff;
+  animation: brandIn 700ms cubic-bezier(.2,.9,.2,1) forwards;
+  transform: scale(0.86);
+  opacity: 0;
 }
 .splash-title {
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 900;
   letter-spacing: 0.5px;
 }
@@ -100,4 +100,10 @@
   margin-top: 6px;
   font-size: 12px;
   color: #ddd;
+}
+
+@keyframes brandIn {
+  0% { transform: scale(0.86); opacity: 0; filter: blur(2px); }
+  60% { transform: scale(1.04); opacity: 1; filter: blur(0); }
+  100% { transform: scale(1.0); opacity: 1; }
 }
