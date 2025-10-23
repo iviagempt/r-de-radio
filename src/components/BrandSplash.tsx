@@ -3,12 +3,10 @@ import { useEffect, useState } from "react";
 
 export default function BrandSplash() {
   const [show, setShow] = useState(true);
-
   useEffect(() => {
-    const t = setTimeout(() => setShow(false), 1100); // ~1.1s
+    const t = setTimeout(() => setShow(false), 1100);
     return () => clearTimeout(t);
   }, []);
-
   if (!show) return null;
 
   return (
