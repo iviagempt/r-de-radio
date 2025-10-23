@@ -1,3 +1,4 @@
+// src/components/StationGridClient.tsx
 "use client";
 import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
@@ -33,11 +34,9 @@ export default function StationGridClient({ stations }: { stations: Station[] })
 
   async function toggleFavorite(stationId: string) {
     if (!user) {
-      // Se não estiver logado, inicia login (Google)
       await sb.auth.signInWithOAuth({ provider: "google" });
       return;
     }
-    // Tenta inserir; se já existir (unique), então remove
     const { error } = await sb
       .from("user_favorites")
       .insert({ user_id: user.id, station_id: stationId });
@@ -60,7 +59,7 @@ export default function StationGridClient({ stations }: { stations: Station[] })
               window.__playStation?.({
                 id: s.id,
                 name: s.name,
-                slug: null, // força uso do ID no fetch
+                slug: null, // força uso do ID
                 logo_url: s.logo_url ?? null,
               })
             }
@@ -85,6 +84,7 @@ export default function StationGridClient({ stations }: { stations: Station[] })
                 borderRadius: 8,
                 padding: 6,
               }}
+              title="Favoritar"
             >
               ❤️
             </button>
