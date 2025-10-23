@@ -1,58 +1,57 @@
+// src/app/api/radiobrowser/search/route.ts
 import { NextResponse } from "next/server";
 
-const API_BASES = [
-  "https://de1.api.radio-browser.info",
-  "https://nl1.api.radio-browser.info",
-  "https://fr1.api.radio-browser.info",
-  "https://at1.api.radio-browser.info",
-];
+const BASE = "https://de1.api.radio-browser.info/json";
 
-async function rbFetch(path: string) {
-  let lastError: any;
-  for (const base of API_BASES) {
-    try {
-      const res = await fetch(`${base}${path}`, {
-        headers: {
-          "User-Agent": "R-de-Radio/1.0 (https://r-de-radio.vercel.app)",
-        },
-        next: { revalidate: 0 },
-      });
-      if (res.ok) return res;
-    } catch (err) {
-      lastError = err;
-    }
-  }
-  throw lastError ?? new Error("All Radio Browser mirrors failed");
+function pickHttps(url?: string | null) {
+  if (!url) return null;
+  try {
+    const u = new URL(url);
+    return u.protocol === "https:" ? url : null;
+  } catch { return null; }
 }
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const q = searchParams.get("q")?.trim();
-  const country = searchParams.get("country")?.trim();
-  const tag = searchParams.get("tag")?.trim();
-  const limit = Number(searchParams.get("limit") ?? "30");
+  const name = searchParams.get("name") || "";
+  const country = searchParams.get("country") || "";
+  const tag = searchParams.get("tag") || "";
 
-  let path = `/json/stations/search?limit=${limit}&hidebroken=true`;
-  if (q) path += `&name=${encodeURIComponent(q)}`;
-  if (country) path += `&countrycode=${encodeURIComponent(country)}`;
-  if (tag) path += `&tag=${encodeURIComponent(tag)}`;
+  let endpoint = "";
+  if (name) {
+    endpoint = `${BASE}/stations/search?name=${encodeURIComponent(name)}&hidebroken=true`;
+  } else if (country) {
+    endpoint = `${BASE}/stations/bycountry/${encodeURIComponent(country)}?hidebroken=true`;
+  } else if (tag) {
+    endpoint = `${BASE}/stations/bytag/${encodeURIComponent(tag)}?hidebroken=true`;
+  } else {
+    return NextResponse.json({ error: "Informe name, country ou tag" }, { status: 400 });
+  }
 
-  const res = await rbFetch(path);
+  const res = await fetch(endpoint, { cache: "no-store" });
+  if (!res.ok) return NextResponse.json({ error: "Falha na API Radio Browser" }, { status: 502 });
   const data = await res.json();
 
-  // Normalize o retorno para o formato do seu app
-  const stations = (data as any[]).map((s) => ({
-    external_id: s.stationuuid,
-    name: s.name,
-    country: s.countrycode || s.country,
-    city: s.state || null,
-    favicon: s.favicon || null,
-    website_url: s.homepage || null,
-    stream_url: s.url_resolved || s.url,
-    tags: s.tags ? s.tags.split(",").map((t: string) => t.trim()).filter(Boolean) : [],
-    bitrate_kbps: s.bitrate || null,
-    codec: s.codec || null,
-  }));
+  const filtered = (data as any[])
+    .map((r) => {
+      const url = r.url_resolved || r.url;
+      const https = pickHttps(url);
+      return {
+        stationuuid: r.stationuuid,
+        name: r.name,
+        country: r.country,
+        state: r.state,
+        language: r.language,
+        tags: r.tags,
+        favicon: r.favicon,
+        codec: r.codec,
+        bitrate: r.bitrate,
+        url: https, // só https para evitar bloqueio em site https
+        homepage: r.homepage || null,
+      };
+    })
+    .filter((r) => r.url && ["mp3", "aac", "mpeg", "aacp"].includes(String(r.codec).toLowerCase()))
+    .slice(0, 100);
 
-  return NextResponse.json({ stations });
+  return NextResponse.json(filtered);
 }
