@@ -1,6 +1,13 @@
 "use client";
 import type { StationLite } from "./GlobalRadioPlayer";
 
+// Tipar a função global, evitando @ts-expect-error
+declare global {
+  interface Window {
+    __playStation?: (s: StationLite) => Promise<void>;
+  }
+}
+
 export default function StationGridClient({ stations }: { stations: StationLite[] }) {
   return (
     <div className="grid-logos">
@@ -9,7 +16,6 @@ export default function StationGridClient({ stations }: { stations: StationLite[
           key={s.id}
           className="radio-card"
           onClick={() => {
-            // @ts-expect-error global
             window.__playStation?.(s);
           }}
           title={s.name}
