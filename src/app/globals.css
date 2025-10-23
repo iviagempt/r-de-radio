@@ -105,3 +105,153 @@ input::placeholder { color: #9a9a9a; }
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 12px;
 }
+/* Paleta e tokens */
+:root {
+  --brand-yellow: #ffc600;
+  --brand-black: #1a1a1a;
+  --surface: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.12);
+  --text: #f2f2f2;
+  --muted: #c7c7c7;
+  --accent: var(--brand-yellow);
+}
+
+/* Fundo com gradiente (opção 1) */
+body {
+  background:
+    radial-gradient(1200px 600px at 85% -10%, rgba(255, 198, 0, 0.18), transparent 60%),
+    radial-gradient(900px 500px at -10% 85%, rgba(255, 198, 0, 0.10), transparent 60%),
+    linear-gradient(160deg, #111 0%, #1a1a1a 60%, #0f0f0f 100%);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Header e footer com blur */
+header, footer {
+  background: rgba(26, 26, 26, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-color: var(--border) !important;
+}
+
+/* Links */
+a { color: var(--accent); }
+a:hover { filter: brightness(1.05); }
+
+/* Botões */
+button, .btn {
+  background: var(--accent);
+  color: #1a1a1a;
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(255, 198, 0, 0.2);
+  transition: transform 0.08s ease, box-shadow 0.2s ease;
+}
+button:hover, .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(255, 198, 0, 0.28);
+}
+
+/* Cards (logos das rádios) */
+.radio-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform .08s ease, border-color .15s ease, box-shadow .2s ease;
+}
+.radio-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 198, 0, 0.5);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25), inset 0 0 0 1px rgba(255, 198, 0, 0.05);
+}
+
+/* Player sticky */
+.player {
+  background: rgba(26, 26, 26, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.player .title {
+  color: #fff;
+  font-weight: 700;
+}
+.player audio {
+  filter: saturate(1.1);
+}
+
+/* Inputs */
+input[type="search"], input, select {
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+input::placeholder { color: #9a9a9a; }
+
+/* Grid responsiva */
+.grid-logos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+/* ===================== */
+/*      MODO AUTO        */
+/* ===================== */
+body.car-mode {
+  background: linear-gradient(180deg, #0d0d0d 0%, #1a1a1a 100%);
+}
+
+/* Esconde navegação secundária no modo carro */
+body.car-mode header nav a {
+  display: none;
+}
+
+/* Player maior e com destaque */
+body.car-mode .player {
+  position: sticky;
+  top: 0;
+  background: #000;
+  border-bottom: 2px solid var(--brand-yellow);
+}
+body.car-mode .player .title {
+  font-size: 20px;
+}
+body.car-mode audio {
+  transform: scale(1.1);
+  transform-origin: left center;
+}
+
+/* Cards e grid maiores no modo carro */
+body.car-mode .grid-logos {
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+}
+body.car-mode .radio-card {
+  border: 2px solid rgba(255, 198, 0, 0.6);
+  padding: 18px;
+}
+
+/* Botões mais robustos no modo carro */
+body.car-mode button,
+body.car-mode .btn {
+  background: var(--brand-yellow);
+  color: #1a1a1a;
+  border: 0;
+  border-radius: 14px;
+  padding: 14px 18px;
+  font-size: 16px;
+  font-weight: 800;
+}
