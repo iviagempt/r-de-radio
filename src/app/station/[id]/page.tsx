@@ -26,14 +26,19 @@ function getSupabaseServer() {
 export default async function StationPage({ params }: { params: { id: string } }) {
   const supabase = getSupabaseServer();
 
-  const { data: station } = await supabase
+  const { data: station, error: e1 } = await supabase
     .from("stations")
     .select("*")
     .eq("id", params.id)
     .single<StationRow>();
 
-  if (!station) {
-    return <main style={{ padding: 24 }}><h1>Estação não encontrada</h1></main>;
+  if (e1 || !station) {
+    return (
+      <main style={{ padding: 24 }}>
+        <h1>Estação não encontrada</h1>
+        <p style={{ color: "#666" }}>{e1?.message}</p>
+      </main>
+    );
   }
 
   const { data: streams } = await supabase
