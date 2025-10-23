@@ -14,8 +14,7 @@ type StationRow = {
   name: string;
   city: string | null;
   country: string | null;
-  slug: string;
-  description?: string | null;
+  slug: string | null;
 };
 
 function getSupabaseServer() {
@@ -24,13 +23,19 @@ function getSupabaseServer() {
   return createClient(url, anon);
 }
 
-// SEO dinâmico por estação
+function isUuid(v: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v);
+}
+
+// SEO dinâmico
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const supabase = getSupabaseServer();
+  const by = isUuid(params.slug) ? { id: params.slug } : { slug: params.slug };
+
   const { data: station } = await supabase
     .from("stations")
     .select("name,city,country,slug")
-    .eq("slug", params.slug)
+    .match(by as any)
     .maybeSingle<Pick<StationRow, "name" | "city" | "country" | "slug">>();
 
   const title = station ? `${station.name} – R de Rádio` : "R de Rádio – Estação";
@@ -40,33 +45,26 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       } ao vivo.`
     : "Ouça rádios do mundo todo, simples e rápido.";
 
-  const url = `https://r-de-radio.vercel.app/station/${params.slug}`;
+  const canonical = `https://r-de-radio.vercel.app/station/${station?.slug || params.slug}`;
 
   return {
     title,
     description,
-    openGraph: {
-      title,
-      description,
-      url,
-      siteName: "R de Rádio – by T de Trips",
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-    },
+    alternates: { canonical },
+    openGraph: { title, description, url: canonical, siteName: "R de Rádio – by T de Trips", type: "website" },
+    twitter: { card: "summary_large_image", title, description },
   };
 }
 
-export default async function StationBySlugPage({ params }: { params: { slug: string } }) {
+export default async function StationPage({ params }: { params: { slug: string } }) {
   const supabase = getSupabaseServer();
+
+  const by = isUuid(params.slug) ? { id: params.slug } : { slug: params.slug };
 
   const { data: station } = await supabase
     .from("stations")
     .select("id,name,city,country,slug")
-    .eq("slug", params.slug)
+    .match(by as any)
     .maybeSingle<StationRow>();
 
   if (!station) {
@@ -102,50 +100,20 @@ export default async function StationBySlugPage({ params }: { params: { slug: st
       </header>
 
       {main ? (
-        <section
-          style={{
-            border: "1px solid #eee",
-            borderRadius: 10,
-            padding: 16,
-            background: "#fff",
-            display: "grid",
-            gap: 12,
-          }}
-        >
-          {/* Barra de status simples */}
+        <section style={{ border: "1px solid #eee", borderRadius: 10, padding: 16, background: "#fff", display: "grid", gap: 12 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, color: "#111" }}>
-            <span
-              style={{
-                width: 8,
-                height: 8,
-                borderRadius: "50%",
-                background: "#2ecc71",
-                display: "inline-block",
-              }}
-              title="Ao vivo"
-            />
+            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#2ecc71", display: "inline-block" }} />
             <span style={{ fontSize: 14 }}>
               Stream principal: <code style={{ fontSize: 12 }}>{main.url}</code>
             </span>
           </div>
-
-          {/* Player DVR com botões próprios */}
           <RadioPlayerDVR2 dvrUrl={main.dvr_url || undefined} liveUrl={main.url} autoPlay={false} />
-
-          {/* Rodapé de ações rápidas */}
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", color: "#666", fontSize: 13 }}>
-            <span>Dica: use “Ativar Timeshift” para retroceder se a estação suportar DVR.</span>
+            <span>Dica: ative Timeshift se a estação suportar DVR.</span>
           </div>
         </section>
       ) : (
-        <section
-          style={{
-            border: "1px solid #eee",
-            borderRadius: 10,
-            padding: 16,
-            background: "#fff",
-          }}
-        >
+        <section style={{ border: "1px solid #eee", borderRadius: 10, padding: 16, background: "#fff" }}>
           <div style={{ marginBottom: 8 }}>Nenhum stream configurado para esta estação.</div>
           <div>
             <Link href="/admin" style={{ color: "#0c63e4" }}>Ir ao Admin</Link> para adicionar um stream.
