@@ -1,4 +1,6 @@
+// src/app/layout.tsx
 import "./globals.css";
+import AdsenseScript from "@/components/AdsenseScript";
 import AppHeader from "@/components/AppHeader";
 
 export const metadata = {
@@ -10,8 +12,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt">
       <body>
+        {/* Script global do AdSense: insira aqui, no topo do body */}
+        <AdsenseScript />
+
+        {/* Seu header */}
         <AppHeader />
+
+        {/* Conteúdo das páginas */}
         {children}
+
+        {/* Footer */}
         <footer style={{ padding: "14px", borderTop: "1px solid #eee", marginTop: 24, fontSize: 12, color: "#666" }}>
           <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
             <div>© 2025 R de Rádio – by T de Trips</div>
