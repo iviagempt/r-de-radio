@@ -24,3 +24,11 @@ button[disabled] { opacity: .6; cursor: default; }
 input, select {
   outline: none;
 }
+/* --- Reforços de estilo (links e hover) --- */
+a {
+  color: #0c63e4;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
