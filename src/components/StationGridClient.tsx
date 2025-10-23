@@ -1,5 +1,7 @@
+// src/components/StationGridClient.tsx
 "use client";
-import { StationLite } from "./GlobalRadioPlayer";
+
+import type { StationLite } from "./GlobalRadioPlayer";
 
 export default function StationGridClient({ stations }: { stations: StationLite[] }) {
   return (
@@ -8,11 +10,12 @@ export default function StationGridClient({ stations }: { stations: StationLite[
         <button
           key={s.id}
           onClick={() => {
+            // Autoplay imediato: função chamada diretamente no clique
             // @ts-expect-error
-            window.__setStationToPlay?.(s);
+            window.__playStation?.(s);
           }}
           style={{
-            aspectRatio: "1 / 1",
+            aspectRatio: "1/1",
             border: "1px solid #eee",
             borderRadius: 12,
             background: "#fff",
