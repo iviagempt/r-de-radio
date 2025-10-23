@@ -1,13 +1,22 @@
-/* Fundo com gradiente preto bonito */
-body {
-  background:
-    radial-gradient(1200px 600px at 85% -10%, rgba(255, 198, 0, 0.18), transparent 60%),
-    radial-gradient(900px 500px at -10% 85%, rgba(255, 198, 0, 0.10), transparent 60%),
-    linear-gradient(160deg, #111 0%, #1a1a1a 60%, #0f0f0f 100%);
-  color: var(--text, #f2f2f2);
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+"use client";
+import { useEffect, useState } from "react";
+
+export default function BrandSplash() {
+  const [show, setShow] = useState(true);
+  useEffect(() => {
+    const t = setTimeout(() => setShow(false), 1100);
+    return () => clearTimeout(t);
+  }, []);
+  if (!show) return null;
+
+  return (
+    <div className="splash">
+      <div className="splash-inner">
+        <div className="splash-title">R de Rádio</div>
+        <div className="splash-sub">by T de Trips</div>
+      </div>
+    </div>
+  );
 }
 
 /* Grid — fixo 4 por linha */
