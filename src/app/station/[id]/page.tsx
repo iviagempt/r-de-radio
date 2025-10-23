@@ -10,7 +10,6 @@ type StreamRow = {
   priority: number | null;
   dvr_url: string | null;
 };
-
 type StationRow = {
   id: string;
   name: string;
@@ -27,19 +26,14 @@ function getSupabaseServer() {
 export default async function StationPage({ params }: { params: { id: string } }) {
   const supabase = getSupabaseServer();
 
-  const { data: station, error: e1 } = await supabase
+  const { data: station } = await supabase
     .from("stations")
     .select("*")
     .eq("id", params.id)
     .single<StationRow>();
 
-  if (e1 || !station) {
-    return (
-      <main style={{ padding: 24 }}>
-        <h1>Estação não encontrada</h1>
-        <p>{e1?.message}</p>
-      </main>
-    );
+  if (!station) {
+    return <main style={{ padding: 24 }}><h1>Estação não encontrada</h1></main>;
   }
 
   const { data: streams } = await supabase
