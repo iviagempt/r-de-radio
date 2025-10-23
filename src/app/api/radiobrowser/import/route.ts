@@ -1,9 +1,14 @@
+// src/app/api/radiobrowser/import/route.ts
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(url, anon);
+
+function slugify(s: string) {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -14,15 +19,21 @@ export async function POST(req: Request) {
   }
 
   // 1) cria/acha estação
-  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-  const { data: station } = await supabase
+  const slug = slugify(name);
+  // Ajuste os campos conforme suas colunas existentes em "stations"
+  const stationInsert: any = { name, country: country || null, city: state || null };
+  if ("slug" in stationInsert || true) stationInsert.slug = slug;
+  if ("favicon" in stationInsert || true) stationInsert.favicon = favicon || null;
+
+  // Se sua tabela não tem 'slug' com unique constraint, apenas faça insert/select.
+  const { data: station, error: e1 } = await supabase
     .from("stations")
-    .upsert({ name, country, city: state || null, slug, favicon: favicon || null }, { onConflict: "slug" })
+    .upsert(stationInsert, { onConflict: "slug" })
     .select("*")
     .single();
 
-  if (!station) {
-    return NextResponse.json({ error: "Falha ao criar estação" }, { status: 500 });
+  if (e1 || !station) {
+    return NextResponse.json({ error: e1?.message || "Falha ao criar estação" }, { status: 500 });
   }
 
   // 2) cria stream principal
