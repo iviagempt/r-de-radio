@@ -1,3 +1,4 @@
+// src/app/admin/import/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -6,12 +7,14 @@ type RBItem = {
   stationuuid: string;
   name: string;
   country?: string;
+  state?: string;
   language?: string;
   tags?: string;
   favicon?: string;
   codec?: string;
   bitrate?: number;
   url: string;
+  homepage?: string | null;
 };
 
 export default function ImportRadiosPage() {
@@ -25,7 +28,7 @@ export default function ImportRadiosPage() {
     setLoading(true); setMsg(null);
     const params = new URLSearchParams();
     params.set(mode, query);
-    const res = await fetch(`/api/radiobrowser/search?${params.toString()}`);
+    const res = await fetch(`/api/radiobrowser/search?${params.toString()}`, { cache: "no-store" });
     const data = await res.json();
     setResults(Array.isArray(data) ? data : []);
     setLoading(false);
@@ -78,6 +81,7 @@ export default function ImportRadiosPage() {
                 <div style={{ fontSize: 11, color: "#888", wordBreak: "break-all" }}>{r.url}</div>
               </div>
               <div style={{ display: "flex", gap: 8 }}>
+                {r.homepage && <a href={r.homepage} target="_blank" rel="noreferrer">Site</a>}
                 <a href={r.url} target="_blank" rel="noreferrer">Testar</a>
                 <button onClick={() => addOne(r)}>Adicionar</button>
               </div>
