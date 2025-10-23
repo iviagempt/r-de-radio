@@ -38,23 +38,26 @@ export default function GlobalRadioPlayer() {
       const audio = audioRef.current;
       if (!audio) return;
 
+      // 1) Atualiza o estado já no clique para mostrar o logo de imediato
       setCurrent(station);
-      setLoading(true);
       setErrorMsg(null);
+      setLoading(true);
 
       try {
+        // 2) Busca stream
         const res = await fetch(`/api/stations/${station.slug || station.id}/primary-stream`, { cache: "no-store" });
         if (!res.ok) throw new Error("Falha ao obter stream");
         const data: Stream = await res.json();
         const url = data.url;
 
-        // Limpar HLS anterior
+        // 3) Limpa HLS anterior
         if (hlsRef.current) {
           try { hlsRef.current.destroy(); } catch {}
           hlsRef.current = null;
         }
         audio.src = "";
 
+        // 4) Toca (HLS ou direto)
         const isHls = url.includes(".m3u8");
         if (isHls && audio.canPlayType("application/vnd.apple.mpegURL") === "") {
           const Hls = await ensureHls();
@@ -69,13 +72,13 @@ export default function GlobalRadioPlayer() {
               });
             });
           } else {
-            throw new Error("HLS não suportado");
+            throw new Error("HLS não suportado no navegador");
           }
         } else {
           audio.src = url;
         }
 
-        // Autoplay no clique do card
+        // 5) Autoplay (gesto do usuário)
         await audio.play().catch(() => {});
       } catch (e: any) {
         console.error(e);
@@ -97,7 +100,7 @@ export default function GlobalRadioPlayer() {
   return (
     <div className="player" style={{ position: "sticky", top: 0, zIndex: 20 }}>
       <div className="player-inner">
-        {/* Logo grande ao lado (acima visualmente do player) */}
+        {/* Logo grande (aparece assim que current muda) */}
         <div className="player-logo">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           {current?.logo_url ? (
@@ -107,13 +110,8 @@ export default function GlobalRadioPlayer() {
           )}
         </div>
 
-        {/* Controles nativos do áudio (sem botão extra) */}
         <div style={{ flex: 1 }}>
-          <audio
-            ref={audioRef}
-            controls
-            style={{ width: "100%" }}
-          />
+          <audio ref={audioRef} controls style={{ width: "100%" }} />
           {loading && <div style={{ color: "#888", fontSize: 12, marginTop: 4 }}>Carregando…</div>}
           {errorMsg && <div style={{ color: "#c00", fontSize: 12, marginTop: 4 }}>{errorMsg}</div>}
         </div>
