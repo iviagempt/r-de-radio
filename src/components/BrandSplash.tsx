@@ -5,7 +5,7 @@ export default function BrandSplash() {
   const [show, setShow] = useState(true);
 
   useEffect(() => {
-    const t = setTimeout(() => setShow(false), 1200); // ~1.2s
+    const t = setTimeout(() => setShow(false), 1100); // ~1.1s
     return () => clearTimeout(t);
   }, []);
 
