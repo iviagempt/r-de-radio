@@ -18,31 +18,31 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             alignItems: "center",
             justifyContent: "space-between",
             gap: 12,
-            padding: "12px 16px",
+            padding: "10px 14px",
             borderBottom: "1px solid #eee",
+            background: "#fff",
             position: "sticky",
             top: 0,
-            background: "#fff",
-            zIndex: 10,
+            zIndex: 20,
           }}
         >
           <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
             <Image src="/logo.png" alt="R de Rádio – by T de Trips" width={28} height={28} priority />
-            <strong style={{ color: "#111" }}>R de Rádio – by T de Trips</strong>
+            <span style={{ fontWeight: 600, fontSize: 16, color: "#111" }}>R de Rádio – by T de Trips</span>
           </Link>
 
-          <nav style={{ display: "flex", gap: 12 }}>
-            <Link href="/" style={{ color: "#0c63e4" }}>Início</Link>
-            <Link href="/auth" style={{ color: "#0c63e4" }}>Entrar</Link>
-            <Link href="/admin" style={{ color: "#0c63e4" }}>Admin</Link>
-            <Link href="/premium" style={{ color: "#0c63e4" }}>Premium</Link>
+          <nav style={{ display: "flex", gap: 12, fontSize: 14 }}>
+            <Link href="/">Início</Link>
+            <Link href="/auth">Entrar</Link>
+            <Link href="/admin">Admin</Link>
+            <Link href="/premium">Premium</Link>
           </nav>
         </header>
 
         {children}
 
-        <footer style={{ padding: "16px", borderTop: "1px solid #eee", marginTop: 40, fontSize: 13, color: "#666" }}>
-          <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+        <footer style={{ padding: "14px", borderTop: "1px solid #eee", marginTop: 24, fontSize: 12, color: "#666" }}>
+          <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
             <div>© 2025 R de Rádio – by T de Trips</div>
             <div style={{ display: "flex", gap: 12 }}>
               <Link href="/sobre">Sobre</Link>
