@@ -139,3 +139,9 @@ export default function GlobalRadioPlayer() {
     </div>
   );
 }
+// no container root do player
+<div className="player" style={{ position: "sticky", top: 0, zIndex: 20 }}>
+  <div style={{ maxWidth: 1100, margin: "0 auto", padding: "10px 12px", display: "flex", alignItems: "center", gap: 10 }}>
+    {/* resto */}
+  </div>
+</div>
