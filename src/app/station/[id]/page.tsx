@@ -36,7 +36,7 @@ export default async function StationPage({ params }: { params: { id: string } }
     return (
       <main style={{ padding: 24 }}>
         <h1>Estação não encontrada</h1>
-        <p style={{ color: "#666" }}>{e1?.message}</p>
+        {e1?.message ? <p style={{ color: "#666" }}>{e1.message}</p> : null}
       </main>
     );
   }
