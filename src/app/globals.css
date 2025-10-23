@@ -1,116 +1,87 @@
-"use client";
-import { useEffect, useState } from "react";
-
-export default function BrandSplash() {
-  const [show, setShow] = useState(true);
-  useEffect(() => {
-    const t = setTimeout(() => setShow(false), 1100);
-    return () => clearTimeout(t);
-  }, []);
-  if (!show) return null;
-
-  return (
-    <div className="splash">
-      <div className="splash-inner">
-        <div className="splash-title">R de Rádio</div>
-        <div className="splash-sub">by T de Trips</div>
-      </div>
-    </div>
-  );
+/* Globals */
+:root {
+  --text: #f2f2f2;
+  --muted: #bfbfbf;
+  --bg-0: #111;
+  --bg-1: #1a1a1a;
+  --bg-2: #0f0f0f;
+  --accent: #ffc600;
 }
 
-/* Grid — fixo 4 por linha */
+/* Fundo com degradê */
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(1200px 600px at 85% -10%, rgba(255, 198, 0, 0.18), transparent 60%),
+    radial-gradient(900px 500px at -10% 85%, rgba(255, 198, 0, 0.10), transparent 60%),
+    linear-gradient(160deg, var(--bg-0) 0%, var(--bg-1) 60%, var(--bg-2) 100%);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Resets básicos */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+button {
+  background: transparent;
+  color: var(--text);
+  border: none;
+  cursor: pointer;
+}
+
+/* Layout simples para os cards */
 .grid-logos {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 20px;
+  padding: 16px;
 }
 
-/* Cards sem borda, leves */
 .radio-card {
-  background: rgba(255, 255, 255, 0.06);
-  border: 0;
-  border-radius: 14px;
-  padding: 10px;
-  aspect-ratio: 1 / 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: transform .08s ease, box-shadow .2s ease;
+  display: grid;
+  place-items: center;
+  background: rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 14px;
+  transition: transform .15s ease, background .15s ease;
 }
+
 .radio-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.25), 0 0 0 2px rgba(255, 198, 0, 0.15) inset;
+  background: rgba(255,255,255,0.1);
 }
+
 .radio-card img {
-  max-width: 78%;
-  max-height: 78%;
+  max-width: 84px;
+  max-height: 84px;
   object-fit: contain;
 }
 
-/* Player fino e elegante */
-.player {
-  background: rgba(26, 26, 26, 0.6);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-.player-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 6px 12px;
-  display: grid;
-  grid-template-columns: auto 1fr; /* logo grande à esquerda, controles à direita */
-  align-items: center;
-  gap: 14px;
-  min-height: 58px;
-}
-
-/* Logo grande sobre o tocador (visual) */
-.player-logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.player-logo img {
-  width: 64px;
-  height: 64px;
-  object-fit: contain;
-  border-radius: 10px;
+/* Player topo */
+.player-bar {
   background: rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 12px;
+  margin: 10px;
 }
 
-/* Splash com animação scale-in */
-.splash {
-  position: fixed;
-  inset: 0;
-  background:
-    radial-gradient(900px 400px at 50% -10%, rgba(255, 198, 0, 0.22), transparent 60%),
-    linear-gradient(180deg, #1a1a1a 0%, #141414 55%, #0f0f0f 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-.splash-inner {
-  text-align: center;
-  color: #fff;
-  animation: brandIn 700ms cubic-bezier(.2,.9,.2,1) forwards;
-  transform: scale(0.86);
-  opacity: 0;
-}
-.splash-title { font-size: 30px; font-weight: 900; letter-spacing: 0.5px; }
-.splash-sub { margin-top: 6px; font-size: 12px; color: #ddd; }
-
-@keyframes brandIn {
-  0% { transform: scale(0.86); opacity: 0; filter: blur(2px); }
-  60% { transform: scale(1.04); opacity: 1; filter: blur(0); }
-  100% { transform: scale(1.0); opacity: 1; }
-}
-
-@keyframes brandIn {
-  0% { transform: scale(0.86); opacity: 0; filter: blur(2px); }
-  60% { transform: scale(1.04); opacity: 1; filter: blur(0); }
-  100% { transform: scale(1.0); opacity: 1; }
+/* Texto pequeno de erro/estado */
+.text-muted {
+  color: var(--muted);
+  font-size: 12px;
 }
