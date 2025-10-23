@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useRef, useState } from "react";
 
 declare global {
@@ -9,13 +8,7 @@ declare global {
   }
 }
 
-export type StationLite = {
-  id: string;
-  name: string;
-  slug: string | null;
-  logo_url: string | null;
-};
-
+export type StationLite = { id: string; name: string; slug: string | null; logo_url: string | null; };
 type Stream = { url: string; dvr_url?: string | null };
 
 export default function GlobalRadioPlayer() {
@@ -38,26 +31,20 @@ export default function GlobalRadioPlayer() {
       const audio = audioRef.current;
       if (!audio) return;
 
-      // 1) Atualiza o estado já no clique para mostrar o logo de imediato
-      setCurrent(station);
+      setCurrent(station);         // mostra logo imediatamente
       setErrorMsg(null);
       setLoading(true);
 
       try {
-        // 2) Busca stream
         const res = await fetch(`/api/stations/${station.slug || station.id}/primary-stream`, { cache: "no-store" });
         if (!res.ok) throw new Error("Falha ao obter stream");
         const data: Stream = await res.json();
         const url = data.url;
 
-        // 3) Limpa HLS anterior
-        if (hlsRef.current) {
-          try { hlsRef.current.destroy(); } catch {}
-          hlsRef.current = null;
-        }
+        // limpar HLS anterior
+        if (hlsRef.current) { try { hlsRef.current.destroy(); } catch {} hlsRef.current = null; }
         audio.src = "";
 
-        // 4) Toca (HLS ou direto)
         const isHls = url.includes(".m3u8");
         if (isHls && audio.canPlayType("application/vnd.apple.mpegURL") === "") {
           const Hls = await ensureHls();
@@ -66,10 +53,7 @@ export default function GlobalRadioPlayer() {
             hlsRef.current = hls;
             await new Promise<void>((resolve) => {
               hls.attachMedia(audio);
-              hls.on(Hls.Events.MEDIA_ATTACHED, () => {
-                hls.loadSource(url);
-                resolve();
-              });
+              hls.on(Hls.Events.MEDIA_ATTACHED, () => { hls.loadSource(url); resolve(); });
             });
           } else {
             throw new Error("HLS não suportado no navegador");
@@ -78,8 +62,7 @@ export default function GlobalRadioPlayer() {
           audio.src = url;
         }
 
-        // 5) Autoplay (gesto do usuário)
-        await audio.play().catch(() => {});
+        await audio.play().catch(() => {}); // autoplay no clique
       } catch (e: any) {
         console.error(e);
         setErrorMsg(e?.message || "Erro ao tocar stream");
@@ -90,21 +73,20 @@ export default function GlobalRadioPlayer() {
 
     return () => {
       window.__playStation = undefined;
-      if (hlsRef.current) {
-        try { hlsRef.current.destroy(); } catch {}
-        hlsRef.current = null;
-      }
+      if (hlsRef.current) { try { hlsRef.current.destroy(); } catch {} hlsRef.current = null; }
     };
   }, []);
 
   return (
     <div className="player" style={{ position: "sticky", top: 0, zIndex: 20 }}>
-      <div className="player-inner">
-        {/* Logo grande (aparece assim que current muda) */}
-        <div className="player-logo">
+      <div className="player-inner" style={{
+        maxWidth: 1100, margin: "0 auto", padding: "6px 12px",
+        display: "grid", gridTemplateColumns: "auto 1fr", alignItems: "center", gap: 14, minHeight: 58
+      }}>
+        <div className="player-logo" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           {current?.logo_url ? (
-            <img src={current.logo_url} alt={current.name || "Estação"} />
+            <img src={current.logo_url} alt={current.name || "Estação"} style={{ width: 64, height: 64, objectFit: "contain", borderRadius: 10, background: "rgba(255,255,255,0.06)" }} />
           ) : (
             <div style={{ width: 64, height: 64, borderRadius: 10, background: "rgba(255,255,255,0.08)" }} />
           )}
