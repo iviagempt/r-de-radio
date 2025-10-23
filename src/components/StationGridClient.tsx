@@ -1,25 +1,18 @@
 "use client";
-import type { StationLite } from "./GlobalRadioPlayer";
+type StationLite = { id: string; name: string; slug?: string | null; logo_url?: string | null };
 
 declare global {
   interface Window { __playStation?: (s: StationLite) => Promise<void>; }
 }
 
-export default function StationGridClient({ stations }: { stations: any[] }) {
+export default function StationGridClient({ stations }: { stations: StationLite[] }) {
   return (
     <div className="grid-logos">
       {stations.map((s) => (
         <button
           key={s.id}
           className="radio-card"
-          onClick={() =>
-            window.__playStation?.({
-              id: s.id,
-              name: s.name,
-              slug: null,                  // força uso do ID
-              logo_url: s.logo_url ?? null
-            })
-          }
+          onClick={() => window.__playStation?.({ id: s.id, name: s.name, slug: null, logo_url: s.logo_url ?? null })}
           type="button"
           title={s.name}
         >
