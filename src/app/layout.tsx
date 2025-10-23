@@ -6,7 +6,7 @@ export const metadata = {
   title: "R de Rádio – by T de Trips",
   description: "Ouça rádios do mundo todo, ao vivo, simples e rápido.",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/favicon.icon",
   },
 };
 
