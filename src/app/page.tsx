@@ -7,6 +7,7 @@ type Station = {
   name: string;
   city: string | null;
   country: string | null;
+  slug?: string | null;
 };
 
 function getSupabaseServer() {
@@ -94,9 +95,22 @@ function Filters() {
   );
 }
 
-function StationCard({ station }: { station: Station }) {
+function StationCard({
+  station,
+}: {
+  station: {
+    id: string;
+    name: string;
+    city: string | null;
+    country: string | null;
+    slug?: string | null;
+  };
+}) {
   const subtitle = [station.city, station.country].filter(Boolean).join(" • ");
   const searchKey = (station.name + " " + subtitle).toLowerCase();
+
+  // Se existir slug usa /station/slug; senão faz fallback para /station/id
+  const href = `/station/${station.slug || station.id}`;
 
   return (
     <div
@@ -114,18 +128,11 @@ function StationCard({ station }: { station: Station }) {
     >
       <div style={{ fontWeight: 700 }}>{station.name}</div>
       {subtitle ? <div style={{ color: "#666", fontSize: 14 }}>{subtitle}</div> : null}
-      <Link
-        href={`/station/${station.id}`}
-        style={{
-          marginTop: 4,
-          display: "inline-flex",
-          alignItems: "center",
-          gap: 8,
-          color: "#0c63e4",
-        }}
-      >
+
+      {/* Pode usar <Link> do next ou <a>. Aqui vai <a> simples para zero dependências */}
+      <a href={href} style={{ marginTop: 4, color: "#0c63e4" }}>
         Ouvir ▸
-      </Link>
+      </a>
     </div>
   );
 }
