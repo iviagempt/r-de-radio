@@ -1,22 +1,31 @@
 "use client";
-import Image from "next/image";
 import Link from "next/link";
 
 export default function AppHeader() {
   return (
-    <header style={{ borderBottom: "1px solid #222", position: "sticky", top: 0, zIndex: 20, background: "rgba(26,26,26,0.7)", backdropFilter: "blur(8px)" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "8px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-        <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-          <Image src="/logo.png" alt="RDR" width={24} height={24} priority />
-          <span style={{ color: "#fff", fontWeight: 800, fontSize: 16, letterSpacing: 0.5 }}>RDR</span>
-        </Link>
-        <nav style={{ display: "flex", gap: 10, fontSize: 14, alignItems: "center" }}>
-          <Link href="/">Início</Link>
-          <Link href="/auth">Entrar</Link>
-          <Link href="/admin">Admin</Link>
-          <Link href="/premium">Premium</Link>
-        </nav>
-      </div>
+    <header style={{
+      display: "flex",
+      alignItems: "center",
+      gap: 12,
+      padding: "10px 12px",
+      position: "sticky",
+      top: 0,
+      zIndex: 20,
+      background: "rgba(0,0,0,0.25)",
+      backdropFilter: "blur(8px)",
+      borderBottom: "1px solid rgba(255,255,255,0.06)"
+    }}>
+      <img src="/logo.png" alt="RDR" width={28} height={28} style={{ borderRadius: 6 }} />
+      <strong style={{ letterSpacing: 0.3 }}>RDR</strong>
+
+      <nav style={{ marginLeft: "auto", display: "flex", gap: 16 }}>
+        <Link href="/">Início</Link>
+        <Link href="/sobre">Sobre</Link>
+        <Link href="/privacidade">Privacidade</Link>
+        <Link href="/termos">Termos</Link>
+        <Link href="/admin">Admin</Link>
+        <Link href="/premium">Premium</Link>
+      </nav>
     </header>
   );
 }
