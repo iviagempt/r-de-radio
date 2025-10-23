@@ -5,7 +5,7 @@ import { createClient } from "@supabase/supabase-js";
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-export async function GET() {
+export async function GET(
   _req: Request,
   { params }: { params: { slug: string } }
 ) {
@@ -23,11 +23,10 @@ export async function GET() {
       .maybeSingle();
 
     if (errStation || !station) {
-      return NextResponse.json({ ok: true });
-}
+      return NextResponse.json({ error: "Station not found" }, { status: 404 });
+    }
 
     // 2) Busca um stream disponível (sem depender de is_primary)
-    // Opcional: se você tiver coluna created_at, pode adicionar .order("created_at", { ascending: false })
     const { data: streams, error: errStream } = await sb
       .from("station_streams")
       .select("url")
