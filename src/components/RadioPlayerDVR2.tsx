@@ -142,17 +142,27 @@ export default function RadioPlayerDVR2({ liveUrl, dvrUrl, autoPlay = false }: P
     <div style={{ display: "grid", gap: 12 }}>
       <audio ref={audioRef} controls style={{ width: "100%" }} />
 
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
         {dvrUrl ? (
           usingDvr ? (
             <>
-              <button onClick={() => seekBack(10)} disabled={!canSeek}>⏪ 10 min</button>
-              <button onClick={() => seekBack(30)} disabled={!canSeek}>⏪ 30 min</button>
-              <button onClick={goLive} disabled={!canSeek}>Live</button>
-              <button onClick={() => setUsingDvr(false)}>Voltar ao Ao Vivo</button>
+              <button onClick={() => seekBack(10)} disabled={!canSeek} style={{ background: "#111" }}>
+                ⏪ 10 min
+              </button>
+              <button onClick={() => seekBack(30)} disabled={!canSeek} style={{ background: "#111" }}>
+                ⏪ 30 min
+              </button>
+              <button onClick={goLive} disabled={!canSeek} style={{ background: "#0c63e4" }}>
+                Live
+              </button>
+              <button onClick={() => setUsingDvr(false)} style={{ background: "#777" }}>
+                Voltar ao Ao Vivo
+              </button>
             </>
           ) : (
-            <button onClick={() => setUsingDvr(true)}>Ativar Timeshift</button>
+            <button onClick={() => setUsingDvr(true)} style={{ background: "#0c63e4" }}>
+              Ativar Timeshift
+            </button>
           )
         ) : null}
 
@@ -164,6 +174,3 @@ export default function RadioPlayerDVR2({ liveUrl, dvrUrl, autoPlay = false }: P
 
         {loading && <span>Carregando...</span>}
       </div>
-    </div>
-  );
-}
