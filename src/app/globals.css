@@ -100,15 +100,13 @@ export default function BrandSplash() {
   transform: scale(0.86);
   opacity: 0;
 }
-.splash-title {
-  font-size: 30px;
-  font-weight: 900;
-  letter-spacing: 0.5px;
-}
-.splash-sub {
-  margin-top: 6px;
-  font-size: 12px;
-  color: #ddd;
+.splash-title { font-size: 30px; font-weight: 900; letter-spacing: 0.5px; }
+.splash-sub { margin-top: 6px; font-size: 12px; color: #ddd; }
+
+@keyframes brandIn {
+  0% { transform: scale(0.86); opacity: 0; filter: blur(2px); }
+  60% { transform: scale(1.04); opacity: 1; filter: blur(0); }
+  100% { transform: scale(1.0); opacity: 1; }
 }
 
 @keyframes brandIn {
