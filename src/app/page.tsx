@@ -27,7 +27,7 @@ export default async function Home() {
   if (error) {
     return (
       <main style={{ padding: "24px 16px" }}>
-        <h1>R de Rádio – by T de Trips</h1>
+        <h1>R de Rádio</h1>
         <p style={{ color: "#c00" }}>Erro ao carregar estações: {error.message}</p>
       </main>
     );
@@ -35,7 +35,7 @@ export default async function Home() {
 
   return (
     <main style={{ padding: "24px 16px", maxWidth: 1100, margin: "0 auto" }}>
-      <h1 style={{ marginTop: 0 }}>R de Rádio – by T de Trips</h1>
+      <h1 style={{ marginTop: 0 }}>R de Rádio</h1>
 
       {/* Busca server-friendly (sem onChange) */}
       <form action="/search" method="GET" style={{ maxWidth: 420, marginBottom: 16 }}>
