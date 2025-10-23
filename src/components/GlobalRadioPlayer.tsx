@@ -24,8 +24,6 @@ export default function GlobalRadioPlayer() {
   const [current, setCurrent] = useState<StationLite | null>(null);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [playing, setPlaying] = useState(false);
-  const [fav, setFav] = useState(false);
 
   async function ensureHls() {
     if (typeof window === "undefined") return null;
@@ -34,14 +32,6 @@ export default function GlobalRadioPlayer() {
     window.Hls = mod.default;
     return window.Hls;
   }
-
-  // Restaurar favorito por id
-  useEffect(() => {
-    if (current?.id) {
-      const key = `fav:${current.id}`;
-      setFav(localStorage.getItem(key) === "1");
-    }
-  }, [current?.id]);
 
   useEffect(() => {
     window.__playStation = async (station: StationLite) => {
@@ -58,6 +48,7 @@ export default function GlobalRadioPlayer() {
         const data: Stream = await res.json();
         const url = data.url;
 
+        // Limpar HLS anterior
         if (hlsRef.current) {
           try { hlsRef.current.destroy(); } catch {}
           hlsRef.current = null;
@@ -84,12 +75,11 @@ export default function GlobalRadioPlayer() {
           audio.src = url;
         }
 
-        await audio.play();
-        setPlaying(true);
+        // Autoplay no clique do card
+        await audio.play().catch(() => {});
       } catch (e: any) {
         console.error(e);
         setErrorMsg(e?.message || "Erro ao tocar stream");
-        setPlaying(false);
       } finally {
         setLoading(false);
       }
@@ -104,80 +94,29 @@ export default function GlobalRadioPlayer() {
     };
   }, []);
 
-  function toggleFav() {
-    if (!current?.id) return;
-    const key = `fav:${current.id}`;
-    const next = !fav;
-    setFav(next);
-    if (next) localStorage.setItem(key, "1");
-    else localStorage.removeItem(key);
-    // aqui você pode também enviar ao backend/supabase se quiser persistir por usuário
-  }
-
   return (
     <div className="player" style={{ position: "sticky", top: 0, zIndex: 20 }}>
       <div className="player-inner">
-        {/* Logo da estação atual (sem nome) — acima do áudio */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        {/* Logo grande ao lado (acima visualmente do player) */}
+        <div className="player-logo">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           {current?.logo_url ? (
-            <img
-              src={current.logo_url}
-              alt={current.name || "Estação"}
-              width={36}
-              height={36}
-              style={{ borderRadius: 6, objectFit: "contain" }}
-            />
+            <img src={current.logo_url} alt={current.name || "Estação"} />
           ) : (
-            <div style={{ width: 36, height: 36, borderRadius: 6, background: "#f2f2f2" }} />
+            <div style={{ width: 64, height: 64, borderRadius: 10, background: "rgba(255,255,255,0.08)" }} />
           )}
-
-          {/* Botão de favoritos */}
-          <button
-            className={`fav-btn ${fav ? "active" : ""}`}
-            onClick={toggleFav}
-            title={fav ? "Remover dos favoritos" : "Adicionar aos favoritos"}
-            aria-pressed={fav}
-            aria-label="Favoritos"
-          >
-            {fav ? "★" : "☆"}
-          </button>
         </div>
 
-        {/* Controles do áudio — player fino */}
+        {/* Controles nativos do áudio (sem botão extra) */}
         <div style={{ flex: 1 }}>
           <audio
             ref={audioRef}
             controls
             style={{ width: "100%" }}
-            onPlay={() => setPlaying(true)}
-            onPause={() => setPlaying(false)}
           />
           {loading && <div style={{ color: "#888", fontSize: 12, marginTop: 4 }}>Carregando…</div>}
           {errorMsg && <div style={{ color: "#c00", fontSize: 12, marginTop: 4 }}>{errorMsg}</div>}
         </div>
-
-        {/* Botão Play/Pause rápido */}
-        <button
-          onClick={() => {
-            const a = audioRef.current;
-            if (!a) return;
-            if (a.paused) a.play().then(() => setPlaying(true)).catch(() => {});
-            else { a.pause(); setPlaying(false); }
-          }}
-          style={{
-            padding: "6px 10px",
-            borderRadius: 8,
-            background: "#ffc600",
-            color: "#1a1a1a",
-            border: 0,
-            fontSize: 14,
-            fontWeight: 800,
-            whiteSpace: "nowrap",
-          }}
-        >
-          {playing ? "Pausar" : "Tocar"}
-        </button>
       </div>
     </div>
   );
