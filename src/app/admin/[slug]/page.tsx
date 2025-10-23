@@ -1,5 +1,3 @@
-"use client";
-
 import { createClient } from "@supabase/supabase-js";
 import Link from "next/link";
 
@@ -9,7 +7,6 @@ type Station = {
   slug: string | null;
   city: string | null;
   country: string | null;
-  description?: string | null;
 };
 
 function isUuid(v: string) {
@@ -23,20 +20,14 @@ function getSb() {
   );
 }
 
-export default async function AdminStationPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function AdminStationPage({ params }: { params: { slug: string } }) {
   const key = params.slug;
   const by = isUuid(key) ? { id: key } : { slug: key };
 
   const sb = getSb();
-
-  // Carrega a estação por id OU por slug (conforme detectado)
   const { data: station, error } = await sb
     .from("stations")
-    .select("id,name,slug,city,country,description")
+    .select("id,name,slug,city,country")
     .match(by as any)
     .maybeSingle<Station>();
 
@@ -44,12 +35,8 @@ export default async function AdminStationPage({
     return (
       <main style={{ padding: 24 }}>
         <h1>Admin · Estação</h1>
-        <p style={{ color: "#c00" }}>Erro ao carregar estação: {error.message}</p>
-        <p>
-          <Link href="/admin" style={{ color: "#0c63e4" }}>
-            ← Voltar ao Admin
-          </Link>
-        </p>
+        <p style={{ color: "#c00" }}>Erro: {error.message}</p>
+        <p><Link href="/admin" style={{ color: "#0c63e4" }}>← Voltar</Link></p>
       </main>
     );
   }
@@ -59,11 +46,7 @@ export default async function AdminStationPage({
       <main style={{ padding: 24 }}>
         <h1>Admin · Estação</h1>
         <p>Estação não encontrada.</p>
-        <p>
-          <Link href="/admin" style={{ color: "#0c63e4" }}>
-            ← Voltar ao Admin
-          </Link>
-        </p>
+        <p><Link href="/admin" style={{ color: "#0c63e4" }}>← Voltar</Link></p>
       </main>
     );
   }
@@ -73,29 +56,18 @@ export default async function AdminStationPage({
       <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
         <div>
           <h1 style={{ margin: "0 0 4px 0" }}>Admin · {station.name}</h1>
-          <div style={{ color: "#666" }}>
-            {station.city || ""} {station.country ? `• ${station.country}` : ""}
-          </div>
           <div style={{ color: "#888", fontSize: 13, marginTop: 4 }}>
             ID: <code>{station.id}</code> · Slug: <code>{station.slug || "—"}</code>
           </div>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <Link href={`/station/${station.slug || station.id}`} style={{ color: "#0c63e4" }}>
-            Ver página pública →
-          </Link>
-          <Link href="/admin" style={{ color: "#0c63e4" }}>
-            ← Voltar
-          </Link>
-        </div>
+        <Link href={`/station/${station.slug || station.id}`} style={{ color: "#0c63e4" }}>
+          Ver página pública →
+        </Link>
       </header>
 
-      {/* Aqui você pode colocar o CRUD de streams e dados da estação */}
       <section style={{ border: "1px solid #eee", borderRadius: 10, padding: 16, background: "#fff" }}>
-        <h2 style={{ marginTop: 0 }}>Editar estação (em breve)</h2>
-        <p style={{ color: "#666" }}>
-          Nesta área você poderá editar nome, slug, cidade/país e gerenciar os streams (url, prioridade, dvr_url).
-        </p>
+        <h2 style={{ marginTop: 0 }}>Gestão da estação</h2>
+        <p style={{ color: "#666" }}>Aqui virá o CRUD de dados e streams.</p>
       </section>
     </main>
   );
