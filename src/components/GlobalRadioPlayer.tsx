@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 declare global {
   interface Window {
-    __setStationToPlay?: (s: StationLite) => Promise<void>;
+    __playStation?: (s: StationLite) => Promise<void>;
     Hls?: any;
   }
 }
@@ -16,22 +16,16 @@ export type StationLite = {
   logo_url: string | null;
 };
 
-type Stream = {
-  url: string;
-  dvr_url?: string | null;
-  priority?: number | null;
-};
+type Stream = { url: string; dvr_url?: string | null };
 
 export default function GlobalRadioPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const hlsRef = useRef<any>(null);
   const [current, setCurrent] = useState<StationLite | null>(null);
-  const [stream, setStream] = useState<Stream | null>(null);
-  const [playing, setPlaying] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [playing, setPlaying] = useState(false);
 
-  // lazy-load hls.js quando precisar
   async function ensureHls() {
     if (typeof window === "undefined") return null;
     if (window.Hls) return window.Hls;
@@ -41,90 +35,69 @@ export default function GlobalRadioPlayer() {
   }
 
   useEffect(() => {
-    window.__setStationToPlay = async (station: StationLite) => {
-      setErrorMsg(null);
-      setLoading(true);
+    window.__playStation = async (station: StationLite) => {
+      const audio = audioRef.current;
+      if (!audio) return;
+
       setCurrent(station);
+      setLoading(true);
+      setErrorMsg(null);
+
       try {
+        // 1) Busca stream
         const res = await fetch(`/api/stations/${station.slug || station.id}/primary-stream`, { cache: "no-store" });
-        if (!res.ok) throw new Error("Falha ao buscar stream");
-        const data = await res.json();
-        setStream({ url: data.url, dvr_url: data.dvr_url, priority: data.priority });
-      } catch (e: any) {
-        setErrorMsg(e?.message || "Erro ao carregar stream");
-        setStream(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-    return () => {
-      window.__setStationToPlay = undefined;
-    };
-  }, []);
+        if (!res.ok) throw new Error("Falha ao obter stream");
+        const data: Stream = await res.json();
+        const url = data.url;
 
-  // carregar e tocar a stream
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio || !stream?.url) return;
+        // 2) Desanexar HLS anterior
+        if (hlsRef.current) {
+          try { hlsRef.current.destroy(); } catch {}
+          hlsRef.current = null;
+        }
+        audio.src = "";
 
-    const url = stream.url;
-    const isHls = url.endsWith(".m3u8") || url.includes(".m3u8");
-
-    async function attachAndPlay() {
-      // limpar HLS anterior
-      if (hlsRef.current) {
-        try {
-          hlsRef.current.destroy();
-        } catch {}
-        hlsRef.current = null;
-      }
-      audio.src = "";
-
-      if (isHls && audio.canPlayType("application/vnd.apple.mpegURL") === "") {
-        // Precisa de hls.js
-        try {
+        // 3) Detecta HLS e prepara fonte
+        const isHls = url.includes(".m3u8");
+        if (isHls && audio.canPlayType("application/vnd.apple.mpegURL") === "") {
           const Hls = await ensureHls();
           if (Hls && Hls.isSupported()) {
             const hls = new Hls({ enableWorker: true, lowLatencyMode: true });
             hlsRef.current = hls;
-            hls.attachMedia(audio);
-            hls.on(Hls.Events.MEDIA_ATTACHED, () => {
-              hls.loadSource(url);
-              audio.play().then(() => setPlaying(true)).catch(() => setPlaying(false));
-            });
-            hls.on(Hls.Events.ERROR, (_ev: any, data: any) => {
-              console.error("HLS error", data);
-              setErrorMsg("Erro no stream HLS");
+            await new Promise<void>((resolve) => {
+              hls.attachMedia(audio);
+              hls.on(Hls.Events.MEDIA_ATTACHED, () => {
+                hls.loadSource(url);
+                resolve();
+              });
             });
           } else {
-            setErrorMsg("HLS não suportado");
+            throw new Error("HLS não suportado");
           }
-        } catch (e) {
-          console.error(e);
-          setErrorMsg("Falha ao inicializar HLS");
+        } else {
+          audio.src = url;
         }
-      } else {
-        // MP3/AAC/OGG direto
-        audio.src = url;
-        audio.play().then(() => setPlaying(true)).catch((err) => {
-          console.error(err);
-          setPlaying(false);
-          setErrorMsg("Autoplay bloqueado. Clique em Tocar.");
-        });
-      }
-    }
 
-    attachAndPlay();
+        // 4) Autoplay imediato, ainda dentro do fluxo iniciado por clique
+        await audio.play();
+        setPlaying(true);
+      } catch (e: any) {
+        console.error(e);
+        setErrorMsg(e?.message || "Erro ao tocar stream");
+        setPlaying(false);
+      } finally {
+        setLoading(false);
+      }
+    };
 
     return () => {
+      window.__playStation = undefined;
       if (hlsRef.current) {
-        try {
-          hlsRef.current.destroy();
-        } catch {}
+        try { hlsRef.current.destroy(); } catch {}
         hlsRef.current = null;
       }
     };
-  }, [stream?.url]);
+  }, []);
 
   return (
     <div style={{ position: "sticky", top: 0, zIndex: 20, background: "#fff", borderBottom: "1px solid #eee" }}>
@@ -147,20 +120,16 @@ export default function GlobalRadioPlayer() {
             onPlay={() => setPlaying(true)}
             onPause={() => setPlaying(false)}
           />
-          {loading && <div style={{ color: "#666", fontSize: 12 }}>Carregando stream…</div>}
+          {loading && <div style={{ color: "#666", fontSize: 12 }}>Carregando…</div>}
           {errorMsg && <div style={{ color: "#c00", fontSize: 12 }}>{errorMsg}</div>}
         </div>
 
         <button
           onClick={() => {
-            const el = audioRef.current;
-            if (!el) return;
-            if (el.paused) {
-              el.play().then(() => setPlaying(true)).catch(() => {});
-            } else {
-              el.pause();
-              setPlaying(false);
-            }
+            const a = audioRef.current;
+            if (!a) return;
+            if (a.paused) a.play().then(() => setPlaying(true)).catch(() => {});
+            else { a.pause(); setPlaying(false); }
           }}
           style={{ padding: "8px 10px", borderRadius: 8, background: "#0c63e4", color: "#fff", border: 0, fontSize: 14 }}
         >
