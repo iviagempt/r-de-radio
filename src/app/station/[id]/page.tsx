@@ -19,7 +19,7 @@ type StationRow = {
 };
 
 function getSupabaseServer() {
-  // Lê as variáveis públicas do Next (já usadas no resto do app)
+  // Estas variáveis já devem estar no Vercel (NEXT_PUBLIC_...)
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
   return createClient(url, anon);
@@ -28,7 +28,7 @@ function getSupabaseServer() {
 export default async function StationPage({ params }: { params: { id: string } }) {
   const supabase = getSupabaseServer();
 
-  // Carrega estação
+  // 1) Buscar a estação pelo ID que vem na URL
   const { data: station, error: e1 } = await supabase
     .from("stations")
     .select("*")
@@ -44,8 +44,8 @@ export default async function StationPage({ params }: { params: { id: string } }
     );
   }
 
-  // Carrega streams ordenados por priority
-  const { data: streams, error: e2 } = await supabase
+  // 2) Buscar os streams dessa estação (ordenados pela prioridade)
+  const { data: streams } = await supabase
     .from("station_streams")
     .select("*")
     .eq("station_id", station.id)
