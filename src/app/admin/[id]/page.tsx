@@ -1,54 +1,102 @@
 "use client";
-import { supabase } from '@/lib/supabaseClient';
-import { useEffect, useState } from 'react';
-import type { StationStream } from '@/types';
-import { useParams } from 'next/navigation';
 
-export default function StationStreamsPage() {
-  const params = useParams();
-  const stationId = params?.id as string;
-  const [items, setItems] = useState<StationStream[]>([]);
-  const [url, setUrl] = useState('');
-  const [format, setFormat] = useState('');
-  const [bitrate, setBitrate] = useState<number | ''>('');
-  const [priority, setPriority] = useState<number | ''>(1);
+import { createClient } from "@supabase/supabase-js";
+import Link from "next/link";
 
-  const load = async () => {
-    const { data } = await supabase.from('station_streams').select('*').eq('station_id', stationId).order('priority', { ascending: true });
-    setItems(data || []);
-  };
-  useEffect(() => { if (stationId) load(); }, [stationId]);
+type Station = {
+  id: string;
+  name: string;
+  slug: string | null;
+  city: string | null;
+  country: string | null;
+  description?: string | null;
+};
 
-  const add = async () => {
-    await supabase.from('station_streams').insert({
-      station_id: stationId, url, format: format || null, bitrate_kbps: bitrate || null, priority: priority || 1, is_active: true
-    });
-    setUrl(''); setFormat(''); setBitrate(''); setPriority(1);
-    await load();
-  };
+function isUuid(v: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v);
+}
 
-  const remove = async (id: string) => { await supabase.from('station_streams').delete().eq('id', id); await load(); };
+function getSb() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+}
+
+export default async function AdminStationPage({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const key = params.slug;
+  const by = isUuid(key) ? { id: key } : { slug: key };
+
+  const sb = getSb();
+
+  // Carrega a estação por id OU por slug (conforme detectado)
+  const { data: station, error } = await sb
+    .from("stations")
+    .select("id,name,slug,city,country,description")
+    .match(by as any)
+    .maybeSingle<Station>();
+
+  if (error) {
+    return (
+      <main style={{ padding: 24 }}>
+        <h1>Admin · Estação</h1>
+        <p style={{ color: "#c00" }}>Erro ao carregar estação: {error.message}</p>
+        <p>
+          <Link href="/admin" style={{ color: "#0c63e4" }}>
+            ← Voltar ao Admin
+          </Link>
+        </p>
+      </main>
+    );
+  }
+
+  if (!station) {
+    return (
+      <main style={{ padding: 24 }}>
+        <h1>Admin · Estação</h1>
+        <p>Estação não encontrada.</p>
+        <p>
+          <Link href="/admin" style={{ color: "#0c63e4" }}>
+            ← Voltar ao Admin
+          </Link>
+        </p>
+      </main>
+    );
+  }
 
   return (
-    <div>
-      <h2>Streams da Estação</h2>
-      <div className="card" style={{ display:'grid', gap:8, maxWidth:650 }}>
-        <input placeholder="URL do stream (.m3u8, .mp3, .aac)" value={url} onChange={e=>setUrl(e.target.value)}/>
-        <input placeholder="Formato (hls/mp3/aac)" value={format} onChange={e=>setFormat(e.target.value)} />
-        <input placeholder="Bitrate kbps (opcional)" value={bitrate} onChange={e=>setBitrate(e.target.value ? Number(e.target.value) : '')} />
-        <input placeholder="Prioridade (1 é mais alto)" value={priority} onChange={e=>setPriority(e.target.value ? Number(e.target.value) : '')} />
-        <button onClick={add}>Adicionar stream</button>
-      </div>
-      <ul style={{ marginTop:16, padding:0, listStyle:'none' }}>
-        {items.map(s => (
-          <li key={s.id} className="card" style={{ display:'flex', gap:8, alignItems:'center', marginBottom:8 }}>
-            <div style={{ flex:1, fontFamily:'monospace', overflow:'hidden', textOverflow:'ellipsis' }}>{s.url}</div>
-            <div>{s.format}</div>
-            <div>prio {s.priority}</div>
-            <button onClick={()=>remove(s.id)}>Remover</button>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <main style={{ maxWidth: 960, margin: "0 auto", padding: "24px 16px", display: "grid", gap: 16 }}>
+      <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+        <div>
+          <h1 style={{ margin: "0 0 4px 0" }}>Admin · {station.name}</h1>
+          <div style={{ color: "#666" }}>
+            {station.city || ""} {station.country ? `• ${station.country}` : ""}
+          </div>
+          <div style={{ color: "#888", fontSize: 13, marginTop: 4 }}>
+            ID: <code>{station.id}</code> · Slug: <code>{station.slug || "—"}</code>
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 8 }}>
+          <Link href={`/station/${station.slug || station.id}`} style={{ color: "#0c63e4" }}>
+            Ver página pública →
+          </Link>
+          <Link href="/admin" style={{ color: "#0c63e4" }}>
+            ← Voltar
+          </Link>
+        </div>
+      </header>
+
+      {/* Aqui você pode colocar o CRUD de streams e dados da estação */}
+      <section style={{ border: "1px solid #eee", borderRadius: 10, padding: 16, background: "#fff" }}>
+        <h2 style={{ marginTop: 0 }}>Editar estação (em breve)</h2>
+        <p style={{ color: "#666" }}>
+          Nesta área você poderá editar nome, slug, cidade/país e gerenciar os streams (url, prioridade, dvr_url).
+        </p>
+      </section>
+    </main>
   );
 }
