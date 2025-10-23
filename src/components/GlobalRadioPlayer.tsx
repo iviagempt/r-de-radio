@@ -1,105 +1,157 @@
+// src/components/GlobalRadioPlayer.tsx
 "use client";
 import { useEffect, useRef, useState } from "react";
 
+type Station = { id: string; name: string; slug?: string | null; logo_url?: string | null };
+
 declare global {
   interface Window {
-    __playStation?: (s: StationLite) => Promise<void>;
-    Hls?: any;
+    __playStation?: (s: Station) => Promise<void>;
   }
 }
 
-export type StationLite = { id: string; name: string; slug: string | null; logo_url: string | null; };
-type Stream = { url: string; dvr_url?: string | null };
-
 export default function GlobalRadioPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const hlsRef = useRef<any>(null);
-  const [current, setCurrent] = useState<StationLite | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [current, setCurrent] = useState<Station | null>(null);
+  const [status, setStatus] = useState<"idle" | "loading" | "playing" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  async function ensureHls() {
-    if (typeof window === "undefined") return null;
-    if (window.Hls) return window.Hls;
-    const mod = await import("hls.js");
-    window.Hls = mod.default;
-    return window.Hls;
-  }
+  const [volume, setVolume] = useState<number>(0.9);
+  const [bufferSecs, setBufferSecs] = useState<number>(60); // 60 | 250 | 360
 
   useEffect(() => {
-    window.__playStation = async (station: StationLite) => {
-      const audio = audioRef.current;
-      if (!audio) return;
+    const el = new Audio();
+    el.preload = "auto";
+    el.crossOrigin = "anonymous";
+    el.volume = volume;
+    audioRef.current = el;
 
-      setCurrent(station);         // mostra logo imediatamente
-      setErrorMsg(null);
-      setLoading(true);
+    const onCanPlay = () => setStatus("playing");
+    const onError = () => {
+      setStatus("error");
+      setErrorMsg("Falha ao carregar stream");
+    };
 
+    el.addEventListener("canplay", onCanPlay);
+    el.addEventListener("error", onError);
+
+    // registrar função global
+    window.__playStation = async (s: Station) => {
       try {
-        const res = await fetch(
-  `/api/stations/${station.slug || station.id}/primary-stream`,
-  { cache: "no-store" }
-);
+        setStatus("loading");
+        setErrorMsg(null);
+        setCurrent(s);
+
+        // Busca a URL do stream pela API (usa slug ou id)
+        const slugOrId = s.slug || s.id;
+        const res = await fetch(`/api/stations/${slugOrId}/primary-stream`, { cache: "no-store" });
         if (!res.ok) throw new Error("Falha ao obter stream");
-        const data: Stream = await res.json();
-        const url = data.url;
+        const { url } = await res.json();
+        if (!url) throw new Error("Stream inválido");
 
-        // limpar HLS anterior
-        if (hlsRef.current) { try { hlsRef.current.destroy(); } catch {} hlsRef.current = null; }
-        audio.src = "";
+        // Pre-buffer simples: faz uma “pré-conexão” aguardando N segundos antes de dar play
+        // Para streams contínuos MP3/AAC, não há buffer size fixo. Esta espera reduz stutter inicial.
+        const a = audioRef.current!;
+        a.src = url;
 
-        const isHls = url.includes(".m3u8");
-        if (isHls && audio.canPlayType("application/vnd.apple.mpegURL") === "") {
-          const Hls = await ensureHls();
-          if (Hls && Hls.isSupported()) {
-            const hls = new Hls({ enableWorker: true, lowLatencyMode: true });
-            hlsRef.current = hls;
-            await new Promise<void>((resolve) => {
-              hls.attachMedia(audio);
-              hls.on(Hls.Events.MEDIA_ATTACHED, () => { hls.loadSource(url); resolve(); });
-            });
-          } else {
-            throw new Error("HLS não suportado no navegador");
-          }
-        } else {
-          audio.src = url;
-        }
+        // inicia silent load
+        await a.load();
 
-        await audio.play().catch(() => {}); // autoplay no clique
+        // aguardar bufferSecs (você pode mudar no seletor)
+        await new Promise((r) => setTimeout(r, bufferSecs * 1000));
+
+        await a.play();
+        setStatus("playing");
       } catch (e: any) {
         console.error(e);
-        setErrorMsg(e?.message || "Erro ao tocar stream");
-      } finally {
-        setLoading(false);
+        setStatus("error");
+        setErrorMsg(e?.message || "Falha ao obter stream");
       }
     };
 
     return () => {
-      window.__playStation = undefined;
-      if (hlsRef.current) { try { hlsRef.current.destroy(); } catch {} hlsRef.current = null; }
+      el.pause();
+      el.removeEventListener("canplay", onCanPlay);
+      el.removeEventListener("error", onError);
+      audioRef.current = null;
     };
-  }, []);
+  }, [bufferSecs, volume]);
+
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.volume = volume;
+  }, [volume]);
+
+  function togglePlay() {
+    const a = audioRef.current;
+    if (!a) return;
+    if (a.paused) {
+      a.play().catch(() => {
+        setStatus("error");
+        setErrorMsg("Não foi possível reproduzir");
+      });
+    } else {
+      a.pause();
+      setStatus("idle");
+    }
+  }
 
   return (
-    <div className="player" style={{ position: "sticky", top: 0, zIndex: 20 }}>
-      <div className="player-inner" style={{
-        maxWidth: 1100, margin: "0 auto", padding: "6px 12px",
-        display: "grid", gridTemplateColumns: "auto 1fr", alignItems: "center", gap: 14, minHeight: 58
-      }}>
-        <div className="player-logo" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+    <div className="player-bar" style={{
+      display: "grid",
+      gridTemplateColumns: "auto 1fr auto",
+      alignItems: "center",
+      gap: 12
+    }}>
+      {/* Esquerda: Logo + info */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+        <div style={{
+          width: 36, height: 36, borderRadius: 8, overflow: "hidden",
+          background: "rgba(255,255,255,0.08)", display: "grid", placeItems: "center"
+        }}>
           {current?.logo_url ? (
-            <img src={current.logo_url} alt={current.name || "Estação"} style={{ width: 64, height: 64, objectFit: "contain", borderRadius: 10, background: "rgba(255,255,255,0.06)" }} />
+            <img src={current.logo_url} alt={current.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           ) : (
-            <div style={{ width: 64, height: 64, borderRadius: 10, background: "rgba(255,255,255,0.08)" }} />
+            <span style={{ fontSize: 12, opacity: 0.7 }}>RDR</span>
           )}
         </div>
-
-        <div style={{ flex: 1 }}>
-          <audio ref={audioRef} controls style={{ width: "100%" }} />
-          {loading && <div style={{ color: "#888", fontSize: 12, marginTop: 4 }}>Carregando…</div>}
-          {errorMsg && <div style={{ color: "#c00", fontSize: 12, marginTop: 4 }}>{errorMsg}</div>}
+        <div style={{ display: "grid" }}>
+          <strong style={{ fontSize: 14, whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden", maxWidth: 220 }}>
+            {current?.name || "R de Rádio"}
+          </strong>
+          <span className="text-muted" style={{ fontSize: 12 }}>
+            {status === "playing" ? "A reproduzir" : status === "loading" ? "A carregar..." : errorMsg || "Pronto"}
+          </span>
         </div>
+      </div>
+
+      {/* Centro: controles principais */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <button onClick={togglePlay} title="Play/Pause" style={{ padding: "6px 10px", borderRadius: 999, background: "rgba(255,255,255,0.12)" }}>
+          {audioRef.current?.paused ? "▶️" : "⏸️"}
+        </button>
+
+        {/* Seletor de buffer */}
+        <label className="text-muted" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          Buffer:
+          <select value={bufferSecs} onChange={(e) => setBufferSecs(Number(e.target.value))}>
+            <option value={60}>60s</option>
+            <option value={250}>250s</option>
+            <option value={360}>360s</option>
+          </select>
+        </label>
+      </div>
+
+      {/* Direita: volume */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <span title="Volume">🔊</span>
+        <input
+          type="range"
+          min={0}
+          max={1}
+          step={0.01}
+          value={volume}
+          onChange={(e) => setVolume(Number(e.target.value))}
+          style={{ width: 120 }}
+        />
       </div>
     </div>
   );
