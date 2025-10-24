@@ -1,29 +1,47 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { usePlayer } from "@/context/PlayerContext"; // importa o hook
+import { usePlayer } from "@/context/PlayerContext";
 
-export default function ElegantPlayer(props?: any) {
-  const ctx = (() => {
-    try {
-      return usePlayer();
-    } catch {
-      return null;
-    }
-  })();
+interface ElegantPlayerProps {
+  streamUrl?: string;
+  src?: string;
+  logoUrl?: string;
+  stationLogo?: string;
+  stationName?: string;
+  autoPlay?: boolean;
+}
 
-  // se o layout chamou sem props, usa o contexto; se tiver props, usa props (compatibilidade)
-  const effectiveStream = props?.streamUrl || props?.src || ctx?.player.streamUrl || "";
-  const effectiveLogo = props?.logoUrl || props?.stationLogo || ctx?.player.logoUrl;
-  const effectiveName = props?.stationName || ctx?.player.stationName || "Nome da Estação";
+export default function ElegantPlayer(props: ElegantPlayerProps = {}) {
+  // tenta obter contexto — se não houver (uso isolado) a função usePlayer irá lançar erro,
+  // por isso tratamos com try/catch:
+  let ctx = null;
+  try {
+    ctx = usePlayer();
+  } catch (e) {
+    ctx = null;
+  }
+
+  const {
+    streamUrl,
+    src,
+    logoUrl,
+    stationLogo,
+    stationName,
+    autoPlay = false,
+  } = props;
+
+  const effectiveStream = streamUrl ?? src ?? (ctx?.player.streamUrl ?? "");
+  const effectiveLogo = logoUrl ?? stationLogo ?? (ctx?.player.logoUrl ?? undefined);
+  const effectiveName = stationName ?? (ctx?.player.stationName ?? "Nome da Estação");
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(ctx?.player.isPlaying ?? false);
   const [isMuted, setIsMuted] = useState(false);
-  const [volume, setVolume] = useState(0.7);
+  const [volume, setVolume] = useState<number>(0.7);
   const [isBuffering, setIsBuffering] = useState(false);
 
-  // quando o contexto muda (p.ex. setStation), sincroniza o player
+  // sincroniza estado isPlaying se houver contexto
   useEffect(() => {
     if (!ctx) return;
     setIsPlaying(ctx.player.isPlaying);
@@ -32,6 +50,7 @@ export default function ElegantPlayer(props?: any) {
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
+
     audio.volume = volume;
     audio.muted = isMuted;
 
@@ -64,8 +83,15 @@ export default function ElegantPlayer(props?: any) {
     if (!audio) return;
     audio.src = effectiveStream || "";
     audio.load();
-    if (isPlaying) {
-      audio.play().catch(() => setIsPlaying(false));
+
+    // se o contexto diz que deve estar a tocar ou se props autoPlay foi pedida
+    const shouldPlay = ctx ? ctx.player.isPlaying : isPlaying || autoPlay;
+    if (shouldPlay) {
+      audio.play().catch(() => {
+        setIsPlaying(false);
+      });
+    } else {
+      setIsPlaying(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [effectiveStream]);
@@ -73,12 +99,14 @@ export default function ElegantPlayer(props?: any) {
   const togglePlay = async () => {
     const audio = audioRef.current;
     if (!audio) return;
+
     if (isPlaying) {
       audio.pause();
       setIsPlaying(false);
       if (ctx) ctx.pause();
       return;
     }
+
     try {
       await audio.play();
       setIsPlaying(true);
@@ -103,19 +131,29 @@ export default function ElegantPlayer(props?: any) {
           // eslint-disable-next-line @next/next/no-img-element
           <img src={effectiveLogo} alt={effectiveName} className="player-logo" />
         ) : (
-          <div className="player-logo-placeholder" aria-hidden>
-            🎧
-          </div>
+          <div className="player-logo-placeholder" aria-hidden>🎧</div>
         )}
       </div>
 
       <div className="player-station-name">{effectiveName}</div>
 
       <div className="player-controls">
-        <button className="control-btn play-btn" onClick={togglePlay} aria-pressed={isPlaying}>
-          {isPlaying ? "⏸" : "▶️"}
+        <button className="control-btn play-btn" onClick={togglePlay} aria-pressed={isPlaying} aria-label={isPlaying ? "Pausar" : "Tocar"}>
+          {isPlaying ? (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+          ) : (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          )}
         </button>
-        <button className="control-btn mute-btn" onClick={toggleMute}>{isMuted ? "🔇" : "🔊"}</button>
+
+        <button className="control-btn mute-btn" onClick={toggleMute} aria-pressed={isMuted} aria-label={isMuted ? "Desativar mudo" : "Ativar mudo"}>
+          {isMuted ? (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><path d="M9 9v6h4l5 5V4l-5 5H9z"/></svg>
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 9v6h4l5 5V4l-5 5H9z"/></svg>
+          )}
+        </button>
+
         <input className="volume-slider" type="range" min="0" max="1" step="0.01" value={isMuted ? 0 : volume} onChange={onVolumeChange} aria-label="Volume" />
       </div>
 
