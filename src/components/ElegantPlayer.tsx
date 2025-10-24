@@ -3,18 +3,32 @@
 import { useEffect, useRef, useState } from "react";
 
 interface ElegantPlayerProps {
-  streamUrl: string;
-  stationName: string;
+  // nomes suportados (compatibilidade)
+  streamUrl?: string;
+  src?: string;
+
   logoUrl?: string;
+  stationLogo?: string;
+
+  stationName?: string;
   autoPlay?: boolean;
 }
 
-export default function ElegantPlayer({
-  streamUrl,
-  stationName,
-  logoUrl,
-  autoPlay = false,
-}: ElegantPlayerProps) {
+export default function ElegantPlayer(props: ElegantPlayerProps) {
+  const {
+    streamUrl,
+    src,
+    logoUrl,
+    stationLogo,
+    stationName,
+    autoPlay = false,
+  } = props;
+
+  // Escolhe a primeira prop disponível (aliases suportados)
+  const effectiveStream = streamUrl ?? src ?? "";
+  const effectiveLogo = logoUrl ?? stationLogo ?? undefined;
+  const effectiveName = stationName ?? "Nenhuma estação selecionada";
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -52,24 +66,24 @@ export default function ElegantPlayer({
     };
   }, [volume, isMuted]);
 
-  // Quando a stream muda, carrega e tenta tocar se necessário
+  // Quando a stream muda, carrega e tenta reproduzir se aplicável
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    audio.src = streamUrl || "";
+    audio.src = effectiveStream || "";
     audio.load();
 
     if (isPlaying || autoPlay) {
       audio.play().catch(() => {
-        // Autoplay pode falhar por políticas do browser
+        // Autoplay bloqueado pelo browser — manter estado consistente
         setIsPlaying(false);
       });
     } else {
       setIsPlaying(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [streamUrl]);
+  }, [effectiveStream]);
 
   const togglePlay = async () => {
     const audio = audioRef.current;
@@ -85,7 +99,7 @@ export default function ElegantPlayer({
       await audio.play();
       setIsPlaying(true);
     } catch {
-      // autoplay bloqueado
+      // autoplay bloqueado ou erro
       setIsPlaying(false);
     }
   };
@@ -99,14 +113,12 @@ export default function ElegantPlayer({
   };
 
   return (
-    <div className="elegant-player" role="region" aria-label={`Player - ${stationName}`}>
-      <audio ref={audioRef} src={streamUrl} preload="none" />
+    <div className="elegant-player" role="region" aria-label={`Player - ${effectiveName}`}>
+      <audio ref={audioRef} src={effectiveStream} preload="none" />
       <div className="player-logo-container">
-        {logoUrl ? (
-          // usa <img> para evitar configurações extra no next.config.js
-          // podes trocar para next/image se preferires e configurar domains
+        {effectiveLogo ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={logoUrl} alt={stationName} className="player-logo" />
+          <img src={effectiveLogo} alt={effectiveName} className="player-logo" />
         ) : (
           <div className="player-logo-placeholder" aria-hidden>
             🎧
@@ -114,13 +126,11 @@ export default function ElegantPlayer({
         )}
       </div>
 
-      <div className="player-station-name">
-        {stationName || "Nenhuma estação selecionada"}
-      </div>
+      <div className="player-station-name">{effectiveName}</div>
 
       <div className="player-controls">
         <button
-          className={`control-btn play-btn`}
+          className="control-btn play-btn"
           onClick={togglePlay}
           aria-pressed={isPlaying}
           aria-label={isPlaying ? "Pausar" : "Tocar"}
