@@ -1,26 +1,28 @@
 // src/components/AppHeader.tsx
-"use client";
+import Link from "next/link";
+
 export default function AppHeader() {
   return (
-    <header
-      style={{
+    <header style={{
+      background: "rgba(0,0,0,0.3)",
+      padding: "16px 24px",
+      borderBottom: "1px solid rgba(255,255,255,0.1)"
+    }}>
+      <nav style={{
         display: "flex",
         alignItems: "center",
-        justifyContent: "flex-start",
-        gap: 12,
-        padding: "12px 16px",
-        position: "sticky",
-        top: 0,
-        zIndex: 40,
-        background: "rgba(0,0,0,0.6)",
-        backdropFilter: "blur(8px)",
-        WebkitBackdropFilter: "blur(8px)",
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
-      }}
-    >
-      <a href="/" aria-label="Página inicial" style={{ display: "inline-grid", placeItems: "center" }}>
-        <img src="/logo.png" alt="Logo" width={28} height={28} style={{ display: "block", borderRadius: 6 }} />
-      </a>
+        justifyContent: "space-between",
+        maxWidth: 1400,
+        margin: "0 auto"
+      }}>
+        <Link href="/" style={{ fontSize: 20, fontWeight: 600 }}>
+          R de Rádio
+        </Link>
+        <div style={{ display: "flex", gap: 16 }}>
+          <Link href="/sobre">Sobre</Link>
+          <Link href="/premium">Premium</Link>
+        </div>
+      </nav>
     </header>
   );
 }
