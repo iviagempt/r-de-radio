@@ -52,19 +52,24 @@ export default async function StationPage({ params }: { params: { slug: string }
   }
 
   // 2) Buscar streams (compatível com schema atual)
-  const { data: streams, error: e2 } = await sb
-    .from("station_streams")
-    .select("url")
-    .eq("station_id", station.id);
+  // 2) Buscar streams priorizando a principal (usa as novas colunas que você criou)
+const { data: streams, error: e2 } = await sb
+  .from("station_streams")
+  .select("url, is_primary, format, bitrate_kbps")
+  .eq("station_id", station.id)
+  .order("is_primary", { ascending: false });
 
-  if (e2) {
-    return (
-      <div style={{ padding: 20, color: "white" }}>
-        <h1>Erro carregando streams</h1>
-        <pre>{e2.message}</pre>
-      </div>
-    );
-  }
+if (e2) {
+  return (
+    <div style={{ padding: 20, color: "white" }}>
+      <h1>Erro carregando streams</h1>
+      <pre>{e2.message}</pre>
+    </div>
+  );
+}
+
+const primary = streams?.[0] || null;
+const urlToPlay = primary?.url || null;
 
   const urlToPlay = streams?.[0]?.url || null;
 
