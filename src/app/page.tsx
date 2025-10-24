@@ -9,10 +9,17 @@ export default async function Page() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
-  const { data: stations } = await sb
+
+  const { data: stations, error } = await sb
     .from("stations")
     .select("id, name, slug, logo_url, country, city, frequency_mhz, genres")
+    .order("name", { ascending: true })
     .limit(24);
 
-  return <StationGridClient stations={stations ?? []} />;
+  // fallback para não ficar vazio caso dê erro
+  if (error || !stations) {
+    return <div style={{ padding: 16 }}>Não foi possível carregar as rádios.</div>;
+  }
+
+  return <StationGridClient stations={stations} />;
 }
