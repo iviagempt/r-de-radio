@@ -6,7 +6,6 @@ interface ElegantPlayerProps {
   streamUrl: string;
   stationName: string;
   logoUrl?: string;
-  // opcional: iniciar tocando ao montar (não garante autoplay por restrições do browser)
   autoPlay?: boolean;
 }
 
@@ -53,7 +52,7 @@ export default function ElegantPlayer({
     };
   }, [volume, isMuted]);
 
-  // Quando a stream muda, tenta carregar e reproduzir (se estava tocando ou se autoPlay)
+  // Quando a stream muda, carrega e tenta tocar se necessário
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -61,10 +60,9 @@ export default function ElegantPlayer({
     audio.src = streamUrl || "";
     audio.load();
 
-    // se já estava tocando ou pediu autoPlay, tenta tocar (pode falhar por autoplay)
     if (isPlaying || autoPlay) {
       audio.play().catch(() => {
-        // autoplay bloqueado — mantém o estado isPlaying = false
+        // Autoplay pode falhar por políticas do browser
         setIsPlaying(false);
       });
     } else {
@@ -87,14 +85,12 @@ export default function ElegantPlayer({
       await audio.play();
       setIsPlaying(true);
     } catch {
-      // autoplay bloqueado: informar visualmente e pedir interação do usuário
+      // autoplay bloqueado
       setIsPlaying(false);
     }
   };
 
-  const toggleMute = () => {
-    setIsMuted((v) => !v);
-  };
+  const toggleMute = () => setIsMuted((v) => !v);
 
   const onVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const v = parseFloat(e.target.value);
@@ -107,6 +103,8 @@ export default function ElegantPlayer({
       <audio ref={audioRef} src={streamUrl} preload="none" />
       <div className="player-logo-container">
         {logoUrl ? (
+          // usa <img> para evitar configurações extra no next.config.js
+          // podes trocar para next/image se preferires e configurar domains
           // eslint-disable-next-line @next/next/no-img-element
           <img src={logoUrl} alt={stationName} className="player-logo" />
         ) : (
@@ -117,7 +115,7 @@ export default function ElegantPlayer({
       </div>
 
       <div className="player-station-name">
-        {stationName || "Nenhuma estação seleccionada"}
+        {stationName || "Nenhuma estação selecionada"}
       </div>
 
       <div className="player-controls">
@@ -129,13 +127,11 @@ export default function ElegantPlayer({
           title={isPlaying ? "Pausar" : "Tocar"}
         >
           {isPlaying ? (
-            /* ícone pause */
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="6" y="4" width="4" height="16" />
               <rect x="14" y="4" width="4" height="16" />
             </svg>
           ) : (
-            /* ícone play */
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polygon points="5 3 19 12 5 21 5 3" />
             </svg>
