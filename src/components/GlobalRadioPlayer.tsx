@@ -117,9 +117,7 @@ export default function GlobalRadioPlayer() {
           <strong style={{ fontSize: 14, whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden", maxWidth: 220 }}>
             {current?.name || "R de Rádio"}
           </strong>
-          <span className="text-muted" style={{ fontSize: 12 }}>
-            {status === "playing" ? "A reproduzir" : status === "loading" ? "A carregar..." : errorMsg || "Pronto"}
-          </span>
+          
         </div>
       </div>
 
