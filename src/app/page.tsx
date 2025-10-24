@@ -46,6 +46,13 @@ export default function Home() {
     if (streams && streams.length > 0) {
       const main = streams.find((s: any) => s.is_primary) || streams[0];
       setPlaying({ station, url: main.url });
+      
+      // Registrar no histórico
+      await supabase.from("listening_history").insert({
+        station_id: station.id,
+        user_ip: null,
+        user_agent: navigator.userAgent
+      });
     } else {
       alert("Nenhum stream disponível para esta estação.");
     }
@@ -53,9 +60,9 @@ export default function Home() {
 
   return (
     <main className="container">
-      <h1 className="title">R de Rádio</h1>
+      <h1 className="title">Ouça Rádios do Mundo</h1>
       <p className="subtitle" style={{ marginBottom: 24 }}>
-        Ouça rádios do mundo todo, simples e rápido.
+        Simples, rápido e gratuito.
       </p>
 
       {/* Player elegante com logo em destaque */}
