@@ -1,17 +1,13 @@
-export const dynamic = "force-dynamic";
+import StationCard from "@/components/StationCard";
 
-export default function Home() {
+export default async function Home() {
+  const stations = [{ name: "Rádio Comercial", slug: "comercial" }];
   return (
-    <div style={{ padding: 20, color: "#fff" }}>
-      <h1>Home OK</h1>
-      <p>Sem handlers de evento nesta página.</p>
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))",
-        gap: 16
-      }}>
-        <a href="/r/comercial" style={{ color: "#9cf" }}>Ir para Comercial</a>
-      </div>
+    <div style={{ padding: 20 }}>
+      <h1>Home</h1>
+      {stations.map(s => (
+        <StationCard key={s.slug} href={`/r/${s.slug}`} name={s.name} />
+      ))}
     </div>
   );
 }
