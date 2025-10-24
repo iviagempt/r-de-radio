@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* ... restante do CSS que eu te passei (variáveis, grid, player, header, etc.) ... */
-
+/* aqui seguem as variáveis :root, grid, cards, header, player, etc. */
 :root {
   --bg: #0a0b0d;
   --panel: #13151a;
