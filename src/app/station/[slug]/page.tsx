@@ -78,11 +78,11 @@ export default async function StationPage({ params }: { params: { slug: string }
 
   if (eStation) {
     return (
-      <main style={{ padding: 24 }}>
-        <h1>Erro carregando estação</h1>
+      <main className="container">
+        <h1 className="title">Erro carregando estação</h1>
         <pre>{eStation.message}</pre>
         <p style={{ marginTop: 8 }}>
-          <Link href="/" style={{ color: "#0c63e4" }}>← Voltar</Link>
+          <Link href="/" className="backlink">← Voltar</Link>
         </p>
       </main>
     );
@@ -90,10 +90,10 @@ export default async function StationPage({ params }: { params: { slug: string }
 
   if (!station) {
     return (
-      <main style={{ padding: 24 }}>
-        <h1>Estação não encontrada</h1>
-        <p style={{ color: "#666" }}>
-          Verifique o endereço ou volte à <Link href="/">página inicial</Link>.
+      <main className="container">
+        <h1 className="title">Estação não encontrada</h1>
+        <p className="subtitle">
+          Verifique o endereço ou volte à <Link href="/" className="backlink">página inicial</Link>.
         </p>
       </main>
     );
@@ -114,7 +114,7 @@ export default async function StationPage({ params }: { params: { slug: string }
   }
 
   if (eStreams) {
-    // fallback minimalista
+    // fallback minimalista (schema antigo)
     const { data } = await supabase
       .from("station_streams")
       .select("id,url,priority")
@@ -122,52 +122,53 @@ export default async function StationPage({ params }: { params: { slug: string }
     streams = data as StreamRow[] | null;
   }
 
-  // Ordenação: primeiro pela flag is_primary desc (se existir),
-  // depois por priority asc (se existir)
+  // Ordenação: primeiro is_primary (desc), depois priority (asc)
   const sorted = (streams || []).slice().sort((a, b) => {
     const ap = (a.is_primary ? 1 : 0) - (b.is_primary ? 1 : 0);
     if (ap !== 0) return -ap; // is_primary true primeiro
     const apr = a.priority ?? Number.MAX_SAFE_INTEGER;
     const bpr = b.priority ?? Number.MAX_SAFE_INTEGER;
-    return apr - bpr; // menor prioridade primeiro
+    return apr - bpr;
   });
 
   const main = sorted[0] || null;
   const urlToPlay = main?.url || null;
 
   return (
-    <main style={{ maxWidth: 960, margin: "0 auto", padding: "24px 16px", display: "grid", gap: 16 }}>
-      <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+    <main className="container">
+      <header className="header">
         <div>
-          <h1 style={{ margin: "0 0 4px 0" }}>{station.name}</h1>
-          <div style={{ color: "#bbb" }}>
+          <h1 className="title">{station.name}</h1>
+          <div className="subtitle">
             {station.city || ""} {station.country ? `• ${station.country}` : ""}
           </div>
         </div>
-        <Link href="/" style={{ color: "#0c63e4" }}>← Voltar</Link>
+        <Link href="/" className="backlink">← Voltar</Link>
       </header>
 
       {!urlToPlay ? (
-        <section style={{ border: "1px solid #333", borderRadius: 10, padding: 16, background: "#1a1a1a", color: "#ddd" }}>
+        <section className="card">
           <div style={{ marginBottom: 8 }}>Nenhum stream configurado para esta estação.</div>
           <div>
-            <Link href="/admin" style={{ color: "#0c63e4" }}>Ir ao Admin</Link> para adicionar um stream.
+            <Link href="/admin" className="backlink">Ir ao Admin</Link> para adicionar um stream.
           </div>
         </section>
       ) : (
-        <section style={{ border: "1px solid #333", borderRadius: 10, padding: 16, background: "#1a1a1a", color: "#ddd", display: "grid", gap: 12 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#2ecc71", display: "inline-block" }} />
+        <section className="card" style={{ display: "grid", gap: 14 }}>
+          <div className="row">
+            <span className="dot" />
             <span style={{ fontSize: 14 }}>
-              Stream principal: <code style={{ fontSize: 12 }}>{urlToPlay}</code>
+              Stream principal: <code className="code">{urlToPlay}</code>
             </span>
           </div>
 
           {/* Player com autoplay muted e fallback HLS */}
-          <AudioPlayer src={urlToPlay} />
+          <div className="audio">
+            <AudioPlayer src={urlToPlay} />
+          </div>
 
           {/* Metadados opcionais */}
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", fontSize: 13, opacity: 0.85 }}>
+          <div className="meta">
             {typeof main?.is_primary === "boolean" && (
               <span>Principal: {main.is_primary ? "Sim" : "Não"}</span>
             )}
