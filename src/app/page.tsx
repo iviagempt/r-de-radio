@@ -1,8 +1,8 @@
 // src/app/page.tsx
 import { createClient } from "@supabase/supabase-js";
-import HomeClient from "@/components/HomeClient";
+import StationGridClient from "@/components/StationGridClient";
 
-export const revalidate = 0; // sempre fresh
+export const revalidate = 0;
 
 export default async function Page() {
   const sb = createClient(
@@ -14,5 +14,5 @@ export default async function Page() {
     .select("id, name, slug, logo_url, country, city, frequency_mhz, genres")
     .limit(24);
 
-  return <HomeClient initialStations={stations ?? []} />;
+  return <StationGridClient stations={stations ?? []} />;
 }
