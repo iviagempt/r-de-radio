@@ -13,6 +13,9 @@ export default function Header() {
       </Link>
       
       <nav className="nav-links">
+        <Link href="/favoritos" className="nav-link">
+          ⭐ Favoritos
+        </Link>
         <Link href="/historico" className="nav-link">
           📜 Histórico
         </Link>
