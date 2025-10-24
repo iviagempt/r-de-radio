@@ -1,8 +1,14 @@
 // src/components/GlobalRadioPlayer.tsx
 "use client";
+
 import { useEffect, useRef, useState } from "react";
 
-type Station = { id: string; name: string; slug?: string | null; logo_url?: string | null };
+type Station = {
+  id: string;
+  name: string;
+  slug?: string | null;
+  logo_url?: string | null;
+};
 
 declare global {
   interface Window {
@@ -16,8 +22,8 @@ export default function GlobalRadioPlayer() {
   const [status, setStatus] = useState<"idle" | "loading" | "playing" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [volume, setVolume] = useState<number>(0.9);
-  const [bufferSecs, setBufferSecs] = useState<number>(60); // 60 | 250 | 360
 
+  // Instancia um único <audio>
   useEffect(() => {
     const el = new Audio();
     el.preload = "auto";
@@ -34,31 +40,21 @@ export default function GlobalRadioPlayer() {
     el.addEventListener("canplay", onCanPlay);
     el.addEventListener("error", onError);
 
-    // registrar função global
+    // Função global para tocar estação pelo Grid
     window.__playStation = async (s: Station) => {
       try {
         setStatus("loading");
         setErrorMsg(null);
         setCurrent(s);
 
-        // Busca a URL do stream pela API (usa slug ou id)
         const slugOrId = s.slug || s.id;
         const res = await fetch(`/api/stations/${slugOrId}/primary-stream`, { cache: "no-store" });
         if (!res.ok) throw new Error("Falha ao obter stream");
         const { url } = await res.json();
         if (!url) throw new Error("Stream inválido");
 
-        // Pre-buffer simples: faz uma “pré-conexão” aguardando N segundos antes de dar play
-        // Para streams contínuos MP3/AAC, não há buffer size fixo. Esta espera reduz stutter inicial.
         const a = audioRef.current!;
         a.src = url;
-
-        // inicia silent load
-        await a.load();
-
-        // aguardar bufferSecs (você pode mudar no seletor)
-        await new Promise((r) => setTimeout(r, bufferSecs * 1000));
-
         await a.play();
         setStatus("playing");
       } catch (e: any) {
@@ -74,8 +70,9 @@ export default function GlobalRadioPlayer() {
       el.removeEventListener("error", onError);
       audioRef.current = null;
     };
-  }, [bufferSecs, volume]);
+  }, []); // não depende de volume aqui para não recriar o áudio
 
+  // Atualiza volume em tempo real
   useEffect(() => {
     if (audioRef.current) audioRef.current.volume = volume;
   }, [volume]);
@@ -94,8 +91,23 @@ export default function GlobalRadioPlayer() {
     }
   }
 
-  
-        
-    </div>
-  );
-}
+  // Se quiser que o player só apareça após escolher uma rádio, descomente:
+  // if (!current) return null;
+
+  return (
+    <div
+      className="player-bar"
+      style={{
+        display: "grid",
+        gridTemplateColumns: "auto 1fr auto",
+        alignItems: "center",
+        gap: 12,
+        padding: "8px 10px",
+        borderRadius: 10,
+        background: "rgba(255,255,255,0.04)",
+      }}
+    >
+      {/* Esquerda: Logo + info (sem placeholder “RDR”) */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+        {/* Avatar só aparece se a estação tiver logo */}
+        {current?.logo_url &&
