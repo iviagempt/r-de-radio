@@ -1,87 +1,36 @@
-/* Globals */
-:root {
-  --text: #f2f2f2;
-  --muted: #bfbfbf;
-  --bg-0: #111;
-  --bg-1: #1a1a1a;
-  --bg-2: #0f0f0f;
-  --accent: #ffc600;
-}
-
-/* Fundo com degradê */
-html, body {
-  height: 100%;
-}
-
-body {
-  margin: 0;
-  background:
-    radial-gradient(1200px 600px at 85% -10%, rgba(255, 198, 0, 0.18), transparent 60%),
-    radial-gradient(900px 500px at -10% 85%, rgba(255, 198, 0, 0.10), transparent 60%),
-    linear-gradient(160deg, var(--bg-0) 0%, var(--bg-1) 60%, var(--bg-2) 100%);
-  color: var(--text);
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* Resets básicos */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-a {
-  color: var(--text);
-  text-decoration: none;
-}
-
-button {
-  background: transparent;
-  color: var(--text);
-  border: none;
-  cursor: pointer;
-}
-
-/* Layout simples para os cards */
+/* PATCH: Cards de rádios minimalistas, sem molduras */
 .grid-logos {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  gap: 20px;
+  gap: 18px;
   padding: 16px;
 }
 
 .radio-card {
   display: grid;
   place-items: center;
-  background: rgba(255,255,255,0.06);
-  border-radius: 12px;
-  padding: 14px;
-  transition: transform .15s ease, background .15s ease;
+  background: transparent;              /* sem fundo */
+  border: none;                         /* sem borda */
+  border-radius: 0;                     /* sem cantos */
+  padding: 12px;                        /* leve respiro */
+  transition: transform .12s ease;      /* hover sutil */
 }
 
 .radio-card:hover {
-  transform: translateY(-2px);
-  background: rgba(255,255,255,0.1);
+  transform: translateY(-2px) scale(1.02);
 }
 
 .radio-card img {
-  max-width: 84px;
-  max-height: 84px;
-  object-fit: contain;
+  width: 100%;
+  max-width: 92px;                      /* tamanho do logo */
+  max-height: 92px;
+  object-fit: contain;                  /* mantém proporção */
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,.25)); /* leve destaque sem “moldura” */
 }
 
-/* Player topo */
-.player-bar {
-  background: rgba(255,255,255,0.06);
-  border-radius: 12px;
-  padding: 12px;
-  margin: 10px;
-}
-
-/* Texto pequeno de erro/estado */
-.text-muted {
-  color: var(--muted);
-  font-size: 12px;
+/* Remove qualquer outline feio ao focar com teclado */
+.radio-card:focus { outline: none; }
+.radio-card:focus-visible {
+  outline: 2px solid rgba(255,255,255,0.25);
+  outline-offset: 4px;
 }
