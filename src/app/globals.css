@@ -1,47 +1,38 @@
 :root {
-  --player-height: 84px; /* altura do player */
-  --player-bg: rgba(10, 12, 18, 0.95);
-  --player-blur: 8px;
-  --player-z: 9999;
+  --player-height: 72px; /* diminuir a altura global do player */
+  --player-logo-size: 52px; /* tamanho do logo */
 }
 
-/* garante espaço no final do conteúdo para o player fixo */
-html, body, #__next {
-  /* se usas Next.js App Router, #__next pode não existir; neste caso em vez de #__next coloca body */
+/* espaço no final do conteúdo para o player fixo */
+body {
   padding-bottom: var(--player-height);
 }
 
-/* Player fixo e centrado */
+/* Player fixo */
 .elegant-player {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
   height: var(--player-height);
-  background: linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.14)), var(--player-bg);
-  backdrop-filter: blur(var(--player-blur));
+  padding: 10px 16px;
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 12px 20px;
-  box-shadow: 0 -6px 24px rgba(0,0,0,0.45);
-  z-index: var(--player-z);
-  border-top: 1px solid rgba(255,255,255,0.03);
+  z-index: 9999;
 }
 
-/* logo sobreposto — usa posição absoluta relativa ao player */
+/* logo sobreposto */
 .player-logo-container {
   position: absolute;
-  left: 20px;
-  top: calc(50% - 32px); /* ajusta para sobrepor ligeiramente acima do player */
+  left: 12px;
+  top: 50%;
   transform: translateY(-50%);
-  width: 64px;
-  height: 64px;
+  width: var(--player-logo-size);
+  height: var(--player-logo-size);
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  z-index: calc(var(--player-z) + 1);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+  z-index: 10000;
 }
 
 /* imagem do logo */
@@ -52,60 +43,24 @@ html, body, #__next {
   display: block;
 }
 
-/* conteúdo do player (nome/controls) deslocado para a direita para não ficar por baixo do logo */
+/* conteúdo do player deslocado para a direita para deixar espaço ao logo */
 .player-content {
-  margin-left: 96px; /* >= logo width + gap */
+  margin-left: calc(var(--player-logo-size) + 18px);
   display: flex;
   align-items: center;
-  width: 100%;
   justify-content: space-between;
+  width: 100%;
   gap: 12px;
 }
 
-/* texto da estação */
-.player-station-name {
-  color: var(--text);
-  font-weight: 700;
-  font-size: 15px;
-}
-
-/* controles */
-.player-controls {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-/* volume slider estilo simples */
+/* ajustamentos dos controlos para terem boa aparência com o logo menor */
 .player-controls .volume-slider {
-  width: 140px;
+  width: 110px;
 }
 
-/* indicador ao vivo / buffering */
-.live-indicator {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #ffd3d3;
-  font-size: 13px;
-}
-
-/* versão mobile — aumenta altura e empilha elementos */
+/* mobile */
 @media (max-width: 640px) {
-  :root { --player-height: 96px; }
-
-  .player-logo-container {
-    width: 64px;
-    height: 64px;
-    left: 12px;
-    top: -12px; /* mais sobreposto se preferires */
-  }
-
-  .player-content {
-    margin-left: 84px;
-  }
-
-  .player-controls .volume-slider {
-    width: 80px;
-  }
+  :root { --player-height: 86px; --player-logo-size: 48px; }
+  .player-content { margin-left: calc(var(--player-logo-size) + 14px); }
+  .player-controls .volume-slider { width: 80px; }
 }
