@@ -83,17 +83,17 @@ const urlToPlay = primary?.url || null;
       </div>
 
       {!urlToPlay ? (
-        <p>Sem streams cadastradas para esta estação.</p>
-      ) : (
-        <>
-          <audio controls autoPlay src={urlToPlay} style={{ width: "100%", maxWidth: 640 }} />
-          <div style={{ marginTop: 8, opacity: 0.7 }}>Fonte: {urlToPlay}</div>
-        </>
+  <p>Sem streams cadastradas para esta estação.</p>
+) : (
+  <>
+    <audio controls autoPlay src={urlToPlay} style={{ width: "100%", maxWidth: 640 }} />
+    <div style={{ marginTop: 8, opacity: 0.8 }}>
+      <div><strong>Fonte:</strong> {urlToPlay}</div>
+      {typeof primary?.is_primary === "boolean" && (
+        <div><strong>Principal:</strong> {primary.is_primary ? "Sim" : "Não"}</div>
       )}
-
-      <div style={{ marginTop: 24 }}>
-        <a href="/" style={{ color: "#9cf" }}>← Voltar</a>
-      </div>
+      {primary?.format && <div><strong>Formato:</strong> {primary.format}</div>}
+      {primary?.bitrate_kbps && <div><strong>Bitrate:</strong> {primary.bitrate_kbps} kbps</div>}
     </div>
-  );
-}
+  </>
+)}
