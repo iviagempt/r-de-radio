@@ -1,19 +1,19 @@
-{/* Título: não mostrar nada se não houver estação atual */}
-<div style={{ display: "grid" }}>
-  {current?.name && (
-    <strong
-      style={{
-        fontSize: 14,
-        whiteSpace: "nowrap",
-        textOverflow: "ellipsis",
-        overflow: "hidden",
-        maxWidth: 220,
-      }}
-    >
-      {current.name}
-    </strong>
-  )}
-  <span className="text-muted" style={{ fontSize: 12 }}>
-    {status === "playing" ? "A reproduzir" : status === "loading" ? "A carregar..." : errorMsg || ""}
-  </span>
-</div>
+{/* Avatar: só mostra se existir logo da estação atual */}
+{current?.logo_url && (
+  <div
+    style={{
+      width: 36,
+      height: 36,
+      borderRadius: 8,
+      overflow: "hidden",
+      display: "grid",
+      placeItems: "center",
+    }}
+  >
+    <img
+      src={current.logo_url}
+      alt={current.name}
+      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+    />
+  </div>
+)}
