@@ -1,12 +1,19 @@
 import "./globals.css";
-export const dynamic = "force-dynamic";
+import type { Metadata } from "next";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export const metadata: Metadata = {
+  title: "R de Rádio – by T de Trips",
+  description: "Ouça rádios do mundo todo, simples e rápido.",
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="pt">
-      <body style={{ margin: 0, padding: 0, background: "#111", color: "white" }}>
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
