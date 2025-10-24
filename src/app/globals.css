@@ -1,79 +1,63 @@
-/* Variáveis fáceis de ajustar */
+/* === REMENDO RÁPIDO: força estilos do player e thumbnails === */
 :root {
-  --player-logo-size: 48px; /* muda para 40px / 52px / 64px conforme preferires */
-  --station-thumb-height: 180px; /* altura fixa das miniaturas na grid */
-  --station-hero-max-height: 320px; /* altura máxima do banner/hero da estação */
+  --player-logo-size: 48px !important;
+  --player-height: 72px !important;
 }
 
-/* PLAYER: logo mais discreto, com padding e fundo suave */
+.elegant-player {
+  position: fixed !important;
+  left: 12px !important;
+  right: 12px !important;
+  bottom: 12px !important;
+  height: var(--player-height) !important;
+  min-height: 56px !important;
+  padding: 8px 14px !important;
+  border-radius: 12px !important;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)) !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.45) !important;
+  backdrop-filter: blur(8px) !important;
+  z-index: 99999 !important;
+  margin: 0 !important;
+  border: 1px solid rgba(255,255,255,0.04) !important;
+}
+
+/* logo do player forçado */
 .player-logo-container {
-  width: var(--player-logo-size);
-  height: var(--player-logo-size);
-  border-radius: 10px;           /* torna arredondado; usa 50% para circular */
-  padding: 6px;                  /* separa o logo do fundo */
-  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: var(--player-logo-size) !important;
+  height: var(--player-logo-size) !important;
+  left: 18px !important;
+  top: calc(50% - var(--player-logo-size) / 2) !important;
+  position: absolute !important;
+  padding: 6px !important;
+  border-radius: 10px !important; /* usa 50% para circular */
+  background: rgba(0,0,0,0.12) !important;
+  overflow: hidden !important;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35) !important;
+  z-index: 100000 !important;
 }
 
-/* garante que a imagem do logo fica contida e nítida */
-.player-logo-container img.player-logo,
-.player-logo-container img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain; /* mantém o logo inteiro; usa 'cover' se preferires crop */
-  display: block;
-  image-rendering: auto;
+.player-logo-container img,
+.player-logo-container img.player-logo {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  display: block !important;
 }
 
-/* THUMBNAILS na grid: altura uniforme e crop */
+/* força thumbnails e hero a terem limites */
 .station-card img,
 .station-thumb img,
-.station-item img {
-  width: 100%;
-  height: var(--station-thumb-height);
-  object-fit: cover; /* recorta para preencher o bloco, mantém uniformidade */
-  border-radius: 12px;
-  display: block;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
-}
-
-/* BANNER / HERO em páginas de estação: limita a altura para não dominar a página */
+.station-item img,
 .station-hero img,
 .station-banner img {
-  width: 100%;
-  max-height: var(--station-hero-max-height);
-  object-fit: cover;
-  border-radius: 12px;
-  display: block;
+  max-height: 320px !important;
+  height: auto !important;
+  width: 100% !important;
+  object-fit: cover !important;
+  border-radius: 12px !important;
 }
 
-/* Texto da estação (caso o logo fique muito grande abaixo) */
-.station-title {
-  margin-top: 12px;
-  font-weight: 700;
-  font-size: 16px;
-  color: var(--text);
-}
-
-/* Ajustes específicos do player para não sobrescrever o layout */
-.elegant-player {
-  height: auto; /* deixa o player adaptar-se */
-  min-height: 56px;
-  padding: 8px 14px;
-  border-radius: 12px;
-  bottom: 12px;
-}
-
-/* Mobile: reduzir ainda mais o logo e a altura do thumb */
-@media (max-width: 640px) {
-  :root {
-    --player-logo-size: 40px;
-    --station-thumb-height: 140px;
-    --station-hero-max-height: 220px;
-  }
-  .player-logo-container { padding: 4px; border-radius: 8px; }
+/* garante espaço inferior para o player */
+body {
+  padding-bottom: calc(var(--player-height) + 12px) !important;
 }
