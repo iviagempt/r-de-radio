@@ -1,8 +1,9 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import Header from "@/components/Header";
 
 export const metadata: Metadata = {
-  title: "R de Rádio – by T de Trips",
+  title: "RDR – Radio de Rádio",
   description: "Ouça rádios do mundo todo, simples e rápido.",
 };
 
@@ -13,7 +14,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt">
-      <body>{children}</body>
+      <body>
+        <Header />
+        {children}
+      </body>
     </html>
   );
 }
