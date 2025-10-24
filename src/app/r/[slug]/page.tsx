@@ -24,11 +24,20 @@ export default async function StationPage({ params }: { params: { slug: string }
 
   let station = bySlug;
   if (!station) {
-    const { data: byId } = await sb
+    const { data: byId, error: eId } = await sb
       .from("stations")
       .select("*")
       .eq("id", params.slug)
       .maybeSingle();
+
+    if (eId) {
+      return (
+        <div style={{ padding: 20, color: "white" }}>
+          <h1>Erro carregando estação</h1>
+          <pre>{eId.message}</pre>
+        </div>
+      );
+    }
     station = byId as any;
   }
 
@@ -42,12 +51,11 @@ export default async function StationPage({ params }: { params: { slug: string }
     );
   }
 
-  // 2) Buscar streams
+  // 2) Buscar streams (compatível com schema atual)
   const { data: streams, error: e2 } = await sb
     .from("station_streams")
-    .select("url, is_primary, format")
-    .eq("station_id", station.id)
-    .order("is_primary", { ascending: false });
+    .select("url")
+    .eq("station_id", station.id);
 
   if (e2) {
     return (
@@ -58,7 +66,7 @@ export default async function StationPage({ params }: { params: { slug: string }
     );
   }
 
-  const urlToPlay = streams?.[0]?.url;
+  const urlToPlay = streams?.[0]?.url || null;
 
   return (
     <div style={{ padding: 20, color: "white" }}>
