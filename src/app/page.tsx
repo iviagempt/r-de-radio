@@ -94,7 +94,8 @@ export default function Home() {
         {stations.length > 0 ? (
           stations.map((s) => (
             <StationCard 
-              key={s.id} 
+              key={s.id}
+              stationId={s.id}
               name={s.name} 
               logo={s.logo_url || undefined} 
               onClick={() => playStation(s)} 
