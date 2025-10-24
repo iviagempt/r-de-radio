@@ -23,6 +23,7 @@ export default function GlobalRadioPlayer() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [volume, setVolume] = useState<number>(0.9);
 
+  // Instancia um único <audio> e expõe a função global para tocar estações
   useEffect(() => {
     const el = new Audio();
     el.preload = "auto";
@@ -39,6 +40,7 @@ export default function GlobalRadioPlayer() {
     el.addEventListener("canplay", onCanPlay);
     el.addEventListener("error", onError);
 
+    // Função global chamada pelos cards de estação
     window.__playStation = async (s: Station) => {
       try {
         setStatus("loading");
@@ -58,7 +60,7 @@ export default function GlobalRadioPlayer() {
       } catch (e: any) {
         console.error(e);
         setStatus("error");
-        setErrorMsg(e?.message || "Falha ao obter stream");
+        setErrorMsg(e?.message || "Não foi possível reproduzir");
       }
     };
 
@@ -70,6 +72,7 @@ export default function GlobalRadioPlayer() {
     };
   }, []);
 
+  // Atualiza volume quando o estado muda
   useEffect(() => {
     if (audioRef.current) audioRef.current.volume = volume;
   }, [volume]);
@@ -88,8 +91,8 @@ export default function GlobalRadioPlayer() {
     }
   }
 
-  // If you prefer to hide the player until a station is selected, uncomment:
-  // if (!current) return null;
+  // ESCONDE COMPLETAMENTE O PLAYER ATÉ UMA RÁDIO SER ESCOLHIDA
+  if (!current) return null;
 
   return (
     <div
@@ -104,7 +107,7 @@ export default function GlobalRadioPlayer() {
         background: "rgba(255,255,255,0.04)",
       }}
     >
-      {/* Left: station info only (no avatar, no RDR) */}
+      {/* Esquerda: apenas info (sem avatar, sem placeholders) */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
         <div style={{ display: "grid" }}>
           {current?.name && (
@@ -123,41 +126,3 @@ export default function GlobalRadioPlayer() {
           <span className="text-muted" style={{ fontSize: 12 }}>
             {status === "playing" ? "A reproduzir" : status === "loading" ? "A carregar..." : errorMsg || ""}
           </span>
-        </div>
-      </div>
-
-      {/* Center: Play/Pause */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <button
-          onClick={togglePlay}
-          title="Play/Pause"
-          style={{
-            padding: 6,
-            borderRadius: 999,
-            background: "rgba(255,255,255,0.12)",
-            width: 28,
-            height: 28,
-            display: "grid",
-            placeItems: "center",
-          }}
-        >
-          {audioRef.current?.paused ? "▶️" : "⏸️"}
-        </button>
-      </div>
-
-      {/* Right: Volume */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <span title="Volume">🔊</span>
-        <input
-          type="range"
-          min={0}
-          max={1}
-          step={0.01}
-          value={volume}
-          onChange={(e) => setVolume(Number(e.target.value))}
-          style={{ width: 120 }}
-        />
-      </div>
-    </div>
-  );
-}
