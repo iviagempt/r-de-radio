@@ -1,6 +1,7 @@
 // src/app/page.tsx
 import { createClient } from "@supabase/supabase-js";
 import StationGridClient from "@/components/StationGridClient";
+
 export const revalidate = 0;
 
 export default async function Page() {
