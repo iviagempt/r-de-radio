@@ -88,7 +88,7 @@ export default function GlobalRadioPlayer() {
     }
   }
 
-  // Se quiser ocultar a barra até escolher uma rádio, descomente a linha abaixo:
+  // If you prefer to hide the player until a station is selected, uncomment:
   // if (!current) return null;
 
   return (
@@ -96,7 +96,7 @@ export default function GlobalRadioPlayer() {
       className="player-bar"
       style={{
         display: "grid",
-        gridTemplateColumns: "auto 1fr auto",
+        gridTemplateColumns: "1fr auto auto",
         alignItems: "center",
         gap: 12,
         padding: "8px 10px",
@@ -104,7 +104,7 @@ export default function GlobalRadioPlayer() {
         background: "rgba(255,255,255,0.04)",
       }}
     >
-      {/* Esquerda: apenas info (sem avatar, sem RDR) */}
+      {/* Left: station info only (no avatar, no RDR) */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
         <div style={{ display: "grid" }}>
           {current?.name && (
@@ -126,7 +126,7 @@ export default function GlobalRadioPlayer() {
         </div>
       </div>
 
-      {/* Centro: Play/Pause */}
+      {/* Center: Play/Pause */}
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <button
           onClick={togglePlay}
@@ -145,7 +145,7 @@ export default function GlobalRadioPlayer() {
         </button>
       </div>
 
-      {/* Direita: Volume */}
+      {/* Right: Volume */}
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <span title="Volume">🔊</span>
         <input
