@@ -1,6 +1,5 @@
 // src/components/AppHeader.tsx
 "use client";
-
 export default function AppHeader() {
   return (
     <header
