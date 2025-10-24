@@ -94,25 +94,7 @@ export default function GlobalRadioPlayer() {
     }
   }
 
-  return (
-    <div className="player-bar" style={{
-      display: "grid",
-      gridTemplateColumns: "auto 1fr auto",
-      alignItems: "center",
-      gap: 12
-    }}>
-      {/* Esquerda: Logo + info */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
-        <div style={{
-          width: 36, height: 36, borderRadius: 8, overflow: "hidden",
-          background: "rgba(255,255,255,0.08)", display: "grid", placeItems: "center"
-        }}>
-          {current?.logo_url ? (
-            <img src={current.logo_url} alt={current.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-          ) : (
-            <span style={{ fontSize: 12, opacity: 0.7 }}>RDR</span>
-          )}
-        </div>
+  
         <div style={{ display: "grid" }}>
           <strong style={{ fontSize: 14, whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden", maxWidth: 220 }}>
             {current?.name || "R de Rádio"}
