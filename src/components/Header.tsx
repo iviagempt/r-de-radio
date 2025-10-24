@@ -7,7 +7,7 @@ export default function Header() {
       <Link href="/" className="logo-link">
         <div className="logo-rdr">
           <span className="logo-text">RDR</span>
-          <span className="logo-subtitle">Radio de Rádio</span>
+          
         </div>
       </Link>
       <nav className="nav-links">
