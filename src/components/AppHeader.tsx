@@ -19,7 +19,7 @@ export default function AppHeader() {
         borderBottom: "1px solid rgba(255,255,255,0.06)",
       }}
     >
-      <img src="/logo.png" alt="Logo" width={28} height={28} />
+      <img src="/logo.png" alt="Logo" width={100} height={100} />
       </a>
     </header>
   );
