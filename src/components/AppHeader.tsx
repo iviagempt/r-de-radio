@@ -1,35 +1,33 @@
+// src/components/AppHeader.tsx
 "use client";
-import { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
 
-const sb = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
-export default function AppHeaderAuthButtons() {
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    sb.auth.getUser().then(({ data }) => setUser(data.user ?? null));
-    const { data: sub } = sb.auth.onAuthStateChange((_e, session) => setUser(session?.user ?? null));
-    return () => sub.subscription.unsubscribe();
-  }, []);
-
-  async function signIn() {
-    await sb.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: window.location.origin + "/auth/callback" }
-    });
-  }
-
-  async function signOut() {
-    await sb.auth.signOut();
-  }
-
-  return user ? (
-    <button onClick={signOut} title="Sair">Sair</button>
-  ) : (
-    <button onClick={signIn} title="Entrar">Entrar</button>
+export default function AppHeader() {
+  return (
+    <header
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        gap: 12,
+        padding: "12px 16px",
+        position: "sticky",
+        top: 0,
+        zIndex: 40,
+        background: "rgba(0,0,0,0.6)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
+        borderBottom: "1px solid rgba(255,255,255,0.06)",
+      }}
+    >
+      <a href="/" aria-label="Página inicial" style={{ display: "inline-grid", placeItems: "center" }}>
+        <img
+          src="/logo.png"
+          alt="Logo"
+          width={28}
+          height={28}
+          style={{ display: "block", borderRadius: 6 }}
+        />
+      </a>
+    </header>
   );
 }
