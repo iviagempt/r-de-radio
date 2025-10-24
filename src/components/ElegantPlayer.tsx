@@ -4,16 +4,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { usePlayer } from "@/context/PlayerContext";
 
 export default function ElegantPlayer() {
-  const ctx = (() => {
-    try {
-      return usePlayer();
-    } catch {
-      return null;
-    }
-  })();
+  const ctx = (() => { try { return usePlayer(); } catch { return null; } })();
 
   const streamUrl = ctx?.player.streamUrl ?? "";
-  const stationName = ctx?.player.stationName ?? "Rádio";
+  const stationName = ctx?.player.stationName ?? "RDR";
   const logo = ctx?.player.logoUrl ?? undefined;
   const shouldPlay = ctx?.player.isPlaying ?? false;
 
@@ -23,12 +17,10 @@ export default function ElegantPlayer() {
   const [volume, setVolume] = useState<number>(0.7);
   const [isBuffering, setIsBuffering] = useState<boolean>(false);
 
-  // sincroniza com contexto
   useEffect(() => {
     setIsPlaying(ctx?.player.isPlaying ?? false);
   }, [ctx?.player.isPlaying]);
 
-  // atualiza source do audio quando muda a stream
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -52,15 +44,9 @@ export default function ElegantPlayer() {
     audio.muted = isMuted;
 
     const onWaiting = () => setIsBuffering(true);
-    const onPlaying = () => {
-      setIsBuffering(false);
-      setIsPlaying(true);
-    };
+    const onPlaying = () => { setIsBuffering(false); setIsPlaying(true); };
     const onPause = () => setIsPlaying(false);
-    const onError = () => {
-      setIsBuffering(false);
-      setIsPlaying(false);
-    };
+    const onError = () => { setIsBuffering(false); setIsPlaying(false); };
 
     audio.addEventListener("waiting", onWaiting);
     audio.addEventListener("playing", onPlaying);
@@ -117,7 +103,7 @@ export default function ElegantPlayer() {
       </div>
 
       <div className="player-content">
-        <div>
+        <div style={{ display: "flex", flexDirection: "column" }}>
           <div className="player-station-name">{stationName}</div>
           {isBuffering ? <div style={{ fontSize: 12, color: "var(--text-dimmer)" }}>Buffering…</div> : null}
         </div>
