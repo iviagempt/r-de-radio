@@ -4,7 +4,7 @@ import AppHeader from "@/components/AppHeader";
 
 export const metadata = {
   title: "R de Rádio — by T de Trips",
-  icons: { icon: "/favicon.ico" },
+  icons: { icon: "/favicon.icon" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
