@@ -10,12 +10,6 @@ type Station = {
   logo_url?: string | null;
 };
 
-declare global {
-  interface Window {
-    __playStation?: (s: Station) => Promise<void>;
-  }
-}
-
 const sb = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -57,14 +51,10 @@ export default function StationGridClient({ stations }: { stations: Station[] })
             type="button"
             className="radio-card"
             style={{ width: "100%", minHeight: 120 }}
-            onClick={() =>
-              window.__playStation?.({
-                id: s.id,
-                name: s.name,
-                slug: null, // força uso do ID
-                logo_url: s.logo_url ?? null,
-              })
-            }
+            onClick={() => {
+              // Navega para a página de detalhes da rádio
+              window.location.href = `/r/${s.slug || s.id}`;
+            }}
           >
             {s.logo_url ? (
               <img src={s.logo_url} alt={s.name} />
