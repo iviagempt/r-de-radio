@@ -3,7 +3,10 @@ import "./globals.css";
 import AppHeader from "@/components/AppHeader";
 import GlobalRadioPlayer from "@/components/GlobalRadioPlayer";
 
-export const metadata = { title: "R de Rádio — by T de Trips" };
+export const metadata = {
+  title: "R de Rádio — by T de Trips",
+  icons: { icon: "/favicon.ico" },
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
