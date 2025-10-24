@@ -19,14 +19,7 @@ export default function AppHeader() {
         borderBottom: "1px solid rgba(255,255,255,0.06)",
       }}
     >
-      <a href="/" aria-label="Página inicial" style={{ display: "inline-grid", placeItems: "center" }}>
-        <img
-          src="/logo.png"
-          alt="Logo"
-          width={28}
-          height={28}
-          style={{ display: "block", borderRadius: 6 }}
-        />
+      <img src="/logo.png" alt="Logo" width={28} height={28} />
       </a>
     </header>
   );
