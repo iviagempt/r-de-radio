@@ -29,8 +29,7 @@ export default function Home() {
 
   return (
     <main className="container">
-      <h1 className="title">Ouça Rádios do Mundo</h1>
-      <p className="subtitle" style={{ marginBottom: 24 }}>Simples, rápido e gratuito.</p>
+      
 
       {playing && (
         <section style={{ marginBottom: 32 }}>
