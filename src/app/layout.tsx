@@ -1,18 +1,10 @@
-// src/app/layout.tsx
-import "./globals.css";
-import AppHeader from "@/components/AppHeader";
-
-export const metadata = {
-  title: "R de Rádio — by T de Trips",
-  icons: { icon: "/favicon.icon" },
-};
+export const dynamic = "force-dynamic";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt">
-      <body>
-        <AppHeader />
-        <main>{children}</main>
+      <body style={{ margin: 0, padding: 0, background: "#111", color: "white" }}>
+        <main style={{ padding: 20 }}>{children}</main>
       </body>
     </html>
   );
