@@ -1,34 +1,58 @@
-/* PATCH: Cards de rádios minimalistas, sem molduras */
+/* src/app/globals.css */
+
+/* Base */
+:root {
+  color-scheme: dark;
+}
+html, body {
+  margin: 0;
+  padding: 0;
+}
+body {
+  color: #fff;
+  background: #0b0b0b;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* Layout principal */
+main {
+  padding: 8px 12px 32px;      /* “respiro” */
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header “glass” (combina com o AppHeader que te passei) */
+header {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Grid de rádios minimalista, sem molduras */
 .grid-logos {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
   gap: 18px;
   padding: 16px;
 }
-
 .radio-card {
   display: grid;
   place-items: center;
-  background: transparent;              /* sem fundo */
-  border: none;                         /* sem borda */
-  border-radius: 0;                     /* sem cantos */
-  padding: 12px;                        /* leve respiro */
-  transition: transform .12s ease;      /* hover sutil */
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 12px;
+  transition: transform .12s ease;
 }
-
-.radio-card:hover {
-  transform: translateY(-2px) scale(1.02);
-}
-
+.radio-card:hover { transform: translateY(-2px) scale(1.02); }
 .radio-card img {
   width: 100%;
-  max-width: 92px;                      /* tamanho do logo */
+  max-width: 92px;
   max-height: 92px;
-  object-fit: contain;                  /* mantém proporção */
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,.25)); /* leve destaque sem “moldura” */
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,.25));
 }
-
-/* Remove qualquer outline feio ao focar com teclado */
 .radio-card:focus { outline: none; }
 .radio-card:focus-visible {
   outline: 2px solid rgba(255,255,255,0.25);
