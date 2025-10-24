@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { getUserSession } from "@/lib/session";
 import StationCard from "@/components/StationCard";
-import ElegantPlayer from "@/components/ElegantPlayer";
 
 type Station = {
   id: string;
@@ -81,26 +80,10 @@ export default function FavoritosPage() {
         Suas rádios preferidas
       </p>
 
-      {/* Player elegante */}
       {/* Player local removido — usamos o player persistente no layout */}
-{playing && (
-  <section style={{ marginBottom: 32 }}>
-    <button onClick={() => setPlaying(null)} className="backlink">✕ Fechar</button>
-  </section>
-)}
-          <button
-            onClick={() => setPlaying(null)}
-            className="backlink"
-            style={{ 
-              marginTop: 16, 
-              display: "block",
-              marginLeft: "auto",
-              marginRight: "auto",
-              width: "fit-content"
-            }}
-          >
-            ✕ Fechar player
-          </button>
+      {playing && (
+        <section style={{ marginBottom: 32 }}>
+          <button onClick={() => setPlaying(null)} className="backlink">✕ Fechar</button>
         </section>
       )}
 
