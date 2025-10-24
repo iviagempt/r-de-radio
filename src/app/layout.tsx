@@ -6,8 +6,7 @@ import ElegantPlayer from "@/components/ElegantPlayer";
 
 export const metadata: Metadata = {
   title: "RDR",
-  description: "Ouça rádios do mundo todo, simples e rápido.",
-};
+  };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   // Substitui estes valores pelos reais ou integra com contexto para trocar dinamicamente
