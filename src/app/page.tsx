@@ -19,11 +19,11 @@ export default async function Home() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 16 }}>
         {stations?.map((s) => (
           <StationCard
-            key={s.id}
-            href={`/r/${s.slug || s.id}`}
-            name={s.name}
-            logo={s.logo_url || undefined}
-          />
+  key={s.id}
+  href={`/station/${s.slug || s.id}`}
+  name={s.name}
+  logo={s.logo_url || undefined}
+/>
         )) || <p>Nenhuma estação.</p>}
       </div>
     </div>
