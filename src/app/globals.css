@@ -186,3 +186,33 @@ button { font-family: inherit; }
   background: linear-gradient(135deg, rgba(255,107,157,.15), rgba(255,107,157,.08));
   border-color: rgba(255,107,157,.3);
 }
+.app-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(135deg, var(--panel), var(--panel-2));
+  color: var(--text-dim);
+  font-family: 'Inter', serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 14px;
+  text-align: center;
+  padding: 12px 0;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  user-select: none;
+}
+
+.footer-link {
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+  color: var(--primary-2);
+  text-decoration: underline;
+}
