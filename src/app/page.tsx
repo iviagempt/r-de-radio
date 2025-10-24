@@ -3,29 +3,41 @@ import StationCard from "@/components/StationCard";
 
 export const dynamic = "force-dynamic";
 
-export default async function Home() {
+function getSupabaseServer() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-  const sb = createClient(url, key);
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+  return createClient(url, anon);
+}
 
-  const { data: stations } = await sb
+export default async function Home() {
+  const supabase = getSupabaseServer();
+
+  const { data: stations } = await supabase
     .from("stations")
     .select("id, name, slug, logo_url")
     .order("name");
 
   return (
-    <div style={{ padding: 20, color: "#fff" }}>
-      <h1>Home</h1>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 16 }}>
-        {stations?.map((s) => (
-          <StationCard
-  key={s.id}
-  href={`/station/${s.slug || s.id}`}
-  name={s.name}
-  logo={s.logo_url || undefined}
-/>
-        )) || <p>Nenhuma estação.</p>}
+    <main className="container">
+      <h1 className="title">R de Rádio</h1>
+      <p className="subtitle" style={{ marginBottom: 24 }}>
+        Ouça rádios do mundo todo, simples e rápido.
+      </p>
+
+      <div className="grid">
+        {stations && stations.length > 0 ? (
+          stations.map((s) => (
+            <StationCard
+              key={s.id}
+              href={`/station/${s.slug || s.id}`}
+              name={s.name}
+              logo={s.logo_url || undefined}
+            />
+          ))
+        ) : (
+          <p className="subtitle">Nenhuma estação cadastrada ainda.</p>
+        )}
       </div>
-    </div>
+    </main>
   );
 }
