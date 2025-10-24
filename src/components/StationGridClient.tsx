@@ -56,13 +56,13 @@ export default function StationGridClient({ stations }: { stations: Station[] })
           <button
             type="button"
             onClick={() =>
-              window.__playStation?.({
-                id: s.id,
-                name: s.name,
-                slug: null, // força uso do ID
-                logo_url: s.logo_url ?? null,
-              })
-            }
+  window.__playStation?.({
+    id: s.id,
+    name: s.name,
+    slug: null,
+    logo_url: s.logo_url ?? null,
+  })
+}
             style={{ display: "grid", placeItems: "center", width: "100%", minHeight: 120 }}
           >
             {s.logo_url ? (
