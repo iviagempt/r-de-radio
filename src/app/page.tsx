@@ -3,6 +3,17 @@ import { createClient } from "@supabase/supabase-js";
 
 export const dynamic = 'force-dynamic';
 
+
+export default function Home() {
+  return (
+    <div style={{ padding: 20, color: "white" }}>
+      <h1>Home OK</h1>
+      <p>Teste estático. Se você está vendo isto, o erro não é no layout.</p>
+    </div>
+  );
+}
+
+
 export default async function HomePage() {
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
