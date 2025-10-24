@@ -1,85 +1,79 @@
+/* Variáveis fáceis de ajustar */
 :root {
-  --player-height: 72px;
-  --player-logo-size: 52px;
-  --player-bg: rgba(10,12,18,0.86);
-  --player-blur: 8px;
-  --player-z: 9999;
+  --player-logo-size: 48px; /* muda para 40px / 52px / 64px conforme preferires */
+  --station-thumb-height: 180px; /* altura fixa das miniaturas na grid */
+  --station-hero-max-height: 320px; /* altura máxima do banner/hero da estação */
 }
 
-/* espaço para o player fixo */
-body {
-  padding-bottom: var(--player-height);
-}
-
-/* player fixo estilo liquid glass */
-.elegant-player {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 12px; /* um pouquinho acima do fundo para sombra */
-  height: var(--player-height);
-  margin: 0 16px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-  border-radius: 12px;
-  padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.45);
-  backdrop-filter: blur(var(--player-blur));
-  z-index: var(--player-z);
-  border: 1px solid rgba(255,255,255,0.04);
-}
-
-/* logo sobreposto (pequeno) */
+/* PLAYER: logo mais discreto, com padding e fundo suave */
 .player-logo-container {
-  position: absolute;
-  left: 22px;
-  top: calc(50% - var(--player-logo-size) / 2 - 6px);
   width: var(--player-logo-size);
   height: var(--player-logo-size);
-  border-radius: 10px;
-  overflow: hidden;
+  border-radius: 10px;           /* torna arredondado; usa 50% para circular */
+  padding: 6px;                  /* separa o logo do fundo */
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
   box-shadow: 0 6px 18px rgba(0,0,0,0.35);
-  background: rgba(0,0,0,0.15);
-  z-index: calc(var(--player-z) + 1);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.player-logo-container img.player-logo {
+/* garante que a imagem do logo fica contida e nítida */
+.player-logo-container img.player-logo,
+.player-logo-container img {
   width: 100%;
   height: 100%;
+  object-fit: contain; /* mantém o logo inteiro; usa 'cover' se preferires crop */
+  display: block;
+  image-rendering: auto;
+}
+
+/* THUMBNAILS na grid: altura uniforme e crop */
+.station-card img,
+.station-thumb img,
+.station-item img {
+  width: 100%;
+  height: var(--station-thumb-height);
+  object-fit: cover; /* recorta para preencher o bloco, mantém uniformidade */
+  border-radius: 12px;
+  display: block;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+}
+
+/* BANNER / HERO em páginas de estação: limita a altura para não dominar a página */
+.station-hero img,
+.station-banner img {
+  width: 100%;
+  max-height: var(--station-hero-max-height);
   object-fit: cover;
+  border-radius: 12px;
   display: block;
 }
 
-.player-content {
-  margin-left: calc(var(--player-logo-size) + 26px);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  gap: 12px;
-}
-
-.player-station-name {
-  color: #ffffff;
+/* Texto da estação (caso o logo fique muito grande abaixo) */
+.station-title {
+  margin-top: 12px;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 16px;
+  color: var(--text);
 }
 
-.player-controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+/* Ajustes específicos do player para não sobrescrever o layout */
+.elegant-player {
+  height: auto; /* deixa o player adaptar-se */
+  min-height: 56px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  bottom: 12px;
 }
 
-.volume-slider {
-  width: 120px;
-}
-
-/* mobile tweaks */
+/* Mobile: reduzir ainda mais o logo e a altura do thumb */
 @media (max-width: 640px) {
-  :root { --player-height: 86px; --player-logo-size: 48px; }
-  .elegant-player { bottom: 10px; margin: 0 12px; padding: 8px 12px; }
-  .volume-slider { width: 80px; }
+  :root {
+    --player-logo-size: 40px;
+    --station-thumb-height: 140px;
+    --station-hero-max-height: 220px;
+  }
+  .player-logo-container { padding: 4px; border-radius: 8px; }
 }
