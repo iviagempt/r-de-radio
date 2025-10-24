@@ -95,44 +95,7 @@ export default function GlobalRadioPlayer() {
   }
 
   
-        <div style={{ display: "grid" }}>
-          <strong style={{ fontSize: 14, whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden", maxWidth: 220 }}>
-            {current?.name || "R de Rádio"}
-          </strong>
-          
-        </div>
-      </div>
-
-      {/* Centro: controles principais */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <button onClick={togglePlay} title="Play/Pause" style={{ padding: "6px 10px", borderRadius: 999, background: "rgba(255,255,255,0.12)" }}>
-          {audioRef.current?.paused ? "▶️" : "⏸️"}
-        </button>
-
-        {/* Seletor de buffer */}
-        <label className="text-muted" style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          Buffer:
-          <select value={bufferSecs} onChange={(e) => setBufferSecs(Number(e.target.value))}>
-            <option value={60}>60s</option>
-            <option value={250}>250s</option>
-            <option value={360}>360s</option>
-          </select>
-        </label>
-      </div>
-
-      {/* Direita: volume */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <span title="Volume">🔊</span>
-        <input
-          type="range"
-          min={0}
-          max={1}
-          step={0.01}
-          value={volume}
-          onChange={(e) => setVolume(Number(e.target.value))}
-          style={{ width: 120 }}
-        />
-      </div>
+        
     </div>
   );
 }
