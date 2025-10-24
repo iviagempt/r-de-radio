@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import StationCard from "@/components/StationCard";
-import AudioPlayer from "@/components/AudioPlayer";
+import ElegantPlayer from "@/components/ElegantPlayer";
 
 type Station = {
   id: string;
@@ -12,10 +12,6 @@ type Station = {
   logo_url: string | null;
   city: string | null;
   country: string | null;
-};
-
-type Stream = {
-  url: string;
 };
 
 function getSupabaseClient() {
@@ -48,7 +44,6 @@ export default function Home() {
       .order("priority", { ascending: true });
 
     if (streams && streams.length > 0) {
-      // Priorizar is_primary ou pegar a primeira
       const main = streams.find((s: any) => s.is_primary) || streams[0];
       setPlaying({ station, url: main.url });
     } else {
@@ -63,31 +58,26 @@ export default function Home() {
         Ouça rádios do mundo todo, simples e rápido.
       </p>
 
-      {/* Player fixo no topo */}
+      {/* Player elegante com logo em destaque */}
       {playing && (
-        <section className="card" style={{ marginBottom: 24, display: "grid", gap: 12 }}>
-          <div className="row">
-            <span className="dot" />
-            <div>
-              <div style={{ fontWeight: 600, marginBottom: 2 }}>{playing.station.name}</div>
-              <div style={{ fontSize: 13, opacity: 0.7 }}>
-                {playing.station.city || ""} {playing.station.country ? `• ${playing.station.country}` : ""}
-              </div>
-            </div>
-          </div>
-          <AudioPlayer src={playing.url} />
+        <section style={{ marginBottom: 32 }}>
+          <ElegantPlayer 
+            src={playing.url} 
+            stationName={playing.station.name}
+            stationLogo={playing.station.logo_url || undefined}
+          />
           <button
             onClick={() => setPlaying(null)}
-            style={{
-              padding: "8px 14px",
-              background: "rgba(255,255,255,.08)",
-              border: "1px solid var(--border)",
-              borderRadius: 8,
-              color: "var(--text)",
-              cursor: "pointer",
+            className="backlink"
+            style={{ 
+              marginTop: 16, 
+              display: "block",
+              marginLeft: "auto",
+              marginRight: "auto",
+              width: "fit-content"
             }}
           >
-            Parar
+            ✕ Fechar player
           </button>
         </section>
       )}
@@ -96,7 +86,12 @@ export default function Home() {
       <div className="grid">
         {stations.length > 0 ? (
           stations.map((s) => (
-            <StationCard key={s.id} name={s.name} logo={s.logo_url || undefined} onClick={() => playStation(s)} />
+            <StationCard 
+              key={s.id} 
+              name={s.name} 
+              logo={s.logo_url || undefined} 
+              onClick={() => playStation(s)} 
+            />
           ))
         ) : (
           <p className="subtitle">Carregando estações...</p>
