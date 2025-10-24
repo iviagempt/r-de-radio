@@ -1,5 +1,4 @@
 "use client";
-
 import FavoriteButton from "./FavoriteButton";
 
 export default function StationCard({
@@ -15,20 +14,13 @@ export default function StationCard({
 }) {
   return (
     <div style={{ position: "relative" }}>
-      <button 
-        className="card-link" 
+      <button
+        className="card-link"
         onClick={onClick}
-        style={{ 
-          flexDirection: "column", 
-          textAlign: "center"
-        }}
+        style={{ flexDirection: "column", textAlign: "center" }}
       >
         {logo ? (
-          <img 
-            className="logo" 
-            src={logo} 
-            alt={name}
-          />
+          <img className="logo" src={logo} alt={name} />
         ) : (
           <span style={{ fontSize: 64 }}>📻</span>
         )}
@@ -36,14 +28,7 @@ export default function StationCard({
           {name}
         </span>
       </button>
-      
-      {/* Botão de favorito no canto superior direito */}
-      <div style={{ 
-        position: "absolute", 
-        top: 8, 
-        right: 8,
-        zIndex: 10
-      }}>
+      <div style={{ position: "absolute", top: 8, right: 8, zIndex: 10 }}>
         <FavoriteButton stationId={stationId} size="small" />
       </div>
     </div>
