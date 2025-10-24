@@ -14,11 +14,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="pt">
       <body>
         <PlayerProvider>
-          <Header />
-          {children}
-          <ElegantPlayer />
-          <Footer />
-        </PlayerProvider>
+  <Header />
+  {children}
+  <Footer />
+  <ElegantPlayer />
+</PlayerProvider>
       </body>
     </html>
   );
