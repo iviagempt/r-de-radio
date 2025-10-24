@@ -10,13 +10,26 @@ export default function StationCard({
   onClick: () => void;
 }) {
   return (
-    <button className="card-link" onClick={onClick} style={{ flexDirection: "column", textAlign: "center", padding: 20 }}>
+    <button 
+      className="card-link" 
+      onClick={onClick}
+      style={{ 
+        flexDirection: "column", 
+        textAlign: "center"
+      }}
+    >
       {logo ? (
-        <img className="logo" src={logo} alt={name} style={{ width: 72, height: 72, marginBottom: 10 }} />
+        <img 
+          className="logo" 
+          src={logo} 
+          alt={name}
+        />
       ) : (
-        <span style={{ fontSize: 56, marginBottom: 10 }}>📻</span>
+        <span style={{ fontSize: 64 }}>📻</span>
       )}
-      <span style={{ fontSize: 14, fontWeight: 500, lineHeight: 1.3 }}>{name}</span>
+      <span style={{ fontSize: 14, fontWeight: 500, lineHeight: 1.3, marginTop: 8 }}>
+        {name}
+      </span>
     </button>
   );
 }
