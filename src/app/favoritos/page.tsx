@@ -85,10 +85,10 @@ export default function FavoritosPage() {
       {playing && (
         <section style={{ marginBottom: 32 }}>
           <ElegantPlayer 
-            src={playing.url} 
-            stationName={playing.station.name}
-            stationLogo={playing.station.logo_url || undefined}
-          />
+  streamUrl={playing.url}
+  stationName={playing.station.name}
+  logoUrl={playing.station.logo_url || undefined}
+/>
           <button
             onClick={() => setPlaying(null)}
             className="backlink"
