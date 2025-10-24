@@ -1,4 +1,3 @@
-{/* Avatar: só mostra se existir logo da estação atual */}
 {current?.logo_url && (
   <div
     style={{
