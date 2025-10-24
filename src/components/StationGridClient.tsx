@@ -54,17 +54,10 @@ export default function StationGridClient({ stations }: { stations: Station[] })
       {stations.map((s) => (
         <div key={s.id} className="radio-card" title={s.name} style={{ position: "relative" }}>
           <button
-            type="button"
-            onClick={() =>
-  window.__playStation?.({
-    id: s.id,
-    name: s.name,
-    slug: null,
-    logo_url: s.logo_url ?? null,
-  })
-}
-            style={{ display: "grid", placeItems: "center", width: "100%", minHeight: 120 }}
-          >
+  type="button"
+  className="radio-card"
+  style={{ width: "100%", minHeight: 120 }}
+>
             {s.logo_url ? (
               <img src={s.logo_url} alt={s.name} />
             ) : (
