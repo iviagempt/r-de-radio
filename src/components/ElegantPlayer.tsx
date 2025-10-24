@@ -27,7 +27,7 @@ export default function ElegantPlayer({ streamUrl, stationName, logoUrl }: Elega
       audioRef.current.pause();
     } else {
       audioRef.current.play().catch(() => {
-        // Handle play error (autoplay restrictions)
+        // Pode tratar erro de autoplay aqui
       });
     }
     setIsPlaying(!isPlaying);
