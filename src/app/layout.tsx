@@ -1,23 +1,114 @@
-import "./globals.css";
-import type { Metadata } from "next";
-import Header from "@/components/Header";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-export const metadata: Metadata = {
-  title: "RDR – Radio de Rádio",
-  description: "Ouça rádios do mundo todo, simples e rápido.",
-};
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <html lang="pt">
-      <body>
-        <Header />
-        {children}
-      </body>
-    </html>
-  );
+:root {
+  --bg: #0a0b0d;
+  --panel: #13151a;
+  --panel-2: #1a1d24;
+  --border: #252932;
+  --text: #f0f2f5;
+  --text-dim: #a0a8b8;
+  --text-dimmer: #6b7280;
+  --primary: #5b8def;
+  --primary-2: #7ba3f5;
+  --primary-glow: rgba(91, 141, 239, 0.25);
+  --success: #3dd68c;
+  --shadow: 0 8px 32px rgba(0,0,0,.45);
+  --shadow-lg: 0 16px 48px rgba(0,0,0,.6);
+  --radius: 16px;
+  --radius-lg: 20px;
 }
+
+* { box-sizing: border-box; margin:0; padding:0; }
+
+html, body {
+  height: 100%;
+  background: radial-gradient(ellipse 1400px 900px at 70% -15%, #1a2332 0%, #0f1318 50%, #0a0b0d 100%), var(--bg);
+  color: var(--text);
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+}
+
+a { color: var(--primary); text-decoration: none; transition: color .2s ease; }
+a:hover { color: var(--primary-2); }
+button { font-family: inherit; }
+
+.container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+
+.title {
+  margin: 0 0 8px 0; font-size: 42px; font-weight: 800; line-height: 1.1; letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #ffffff 0%, #b8c5d8 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.subtitle { color: var(--text-dim); font-size: 16px; line-height: 1.5; }
+
+.card {
+  background: linear-gradient(135deg, var(--panel) 0%, var(--panel-2) 100%);
+  border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px;
+}
+
+.backlink {
+  background: linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+  border: 1px solid var(--border); padding: 10px 18px; border-radius: 12px; color: var(--text);
+  font-size: 14px; font-weight: 500; transition: all .2s ease; cursor: pointer;
+}
+.backlink:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.24); background: linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.06)); }
+
+/* Header */
+.app-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 20px 24px; background: linear-gradient(135deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
+  border-bottom:1px solid var(--border); backdrop-filter: blur(10px); position: sticky; top:0; z-index:100;
+}
+.logo-link { text-decoration:none; transition: transform .2s ease; }
+.logo-link:hover { transform: scale(1.02); }
+.logo-rdr { display:flex; flex-direction:column; gap:2px; }
+.logo-text {
+  font-size: 32px; font-weight: 900; letter-spacing: -1px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; line-height:1;
+}
+.logo-subtitle { font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-dim); opacity:.7; }
+.nav-links { display:flex; gap:16px; align-items:center; }
+.nav-link {
+  padding:8px 16px; background: linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+  border:1px solid var(--border); border-radius:10px; color:var(--text); font-size:14px; font-weight:500; transition: all .2s ease;
+  display:flex; align-items:center; gap:6px;
+}
+.nav-link:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.2); background: linear-gradient(135deg, rgba(255,255,255,.1), rgba(255,255,255,.04)); }
+
+/* Grid */
+.grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap:20px; margin-top:32px; }
+@media (max-width: 768px) { .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap:16px; } }
+
+.card-link {
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
+  padding: 28px 20px; background: linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+  border:1px solid var(--border); border-radius:14px; transition: all .25s cubic-bezier(0.4,0,0.2,1);
+  color:var(--text); cursor:pointer; text-align:center; min-height:180px;
+}
+.card-link:hover { transform: translateY(-4px); border-color: rgba(255,255,255,.3); background: linear-gradient(135deg, rgba(255,255,255,.1), rgba(255,255,255,.04)); box-shadow: 0 12px 32px rgba(0,0,0,.3); }
+.card-link:active { transform: translateY(-2px); }
+
+.logo { width: 96px; height: 96px; object-fit: contain; border-radius: 0; transition: transform .25s ease; }
+.card-link:hover .logo { transform: scale(1.05); }
+
+/* Player Elegante */
+.elegant-player {
+  background: linear-gradient(145deg, #15181f 0%, #1a1e27 50%, #13161d 100%);
+  border:1px solid rgba(255,255,255,.08); border-radius: var(--radius-lg); padding: 48px 32px; box-shadow: var(--shadow-lg);
+  display:flex; flex-direction:column; align-items:center; gap:24px; position:relative; overflow:hidden;
+}
+.elegant-player::before {
+  content:""; position:absolute; top:-50%; left:-50%; width:200%; height:200%;
+  background: radial-gradient(circle at center, var(--primary-glow) 0%, transparent 60%);
+  opacity:.4; pointer-events:none; animation: rotate 20s linear infinite;
+}
+@keyframes rotate { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+.player-logo-container { position:relative; z-index:1; filter: drop-shadow(0 12px 40px rgba(0,0,0,.5)); }
+.player-logo, .player-logo-placeholder { width: 200px; height: 200px; object-fit: contain; background: transparent; border-radius:0; animation: float 6s ease-in-out infinite; }
+.player-logo-placeholder { display:flex; align-items:center; justify-content:center; font-size:96px; }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+.player-station-name { font-size: 32px; font-weight: 800; text-align:center; letter-spacing:-.5px; margin-top:8px; }
+.live-indicator { display:flex; align-items:center; gap:10px; padding:8px 18px; background: rgba(61,214,140,.12); border:1px solid rgba(61,214,140,.3); border-radius:24px; }
+.live-dot { width:10px; height:10px; border-radius:50%; background: var(--success); box-shadow:0 0 16px rgba(61,214,140,.9); animation:pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{
