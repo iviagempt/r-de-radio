@@ -10,26 +10,11 @@ export default function StationCard({
   logo?: string;
 }) {
   return (
-    <a
-      href={href}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-        padding: 12,
-        background: "rgba(255,255,255,0.06)",
-        borderRadius: 12,
-        textDecoration: "none",
-        color: "inherit",
-        transition: "transform 0.15s ease",
-      }}
-      onMouseOver={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
-      onMouseOut={(e) => (e.currentTarget.style.transform = "translateY(0)")}
-    >
+    <a className="card-link" href={href}>
       {logo ? (
-        <img src={logo} alt={name} style={{ width: 36, height: 36, objectFit: "contain" }} />
+        <img className="logo" src={logo} alt={name} />
       ) : (
-        <span style={{ fontSize: 24 }}>📻</span>
+        <span style={{ fontSize: 28 }}>📻</span>
       )}
       <span style={{ fontWeight: 600 }}>{name}</span>
     </a>
