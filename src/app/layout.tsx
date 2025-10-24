@@ -7,8 +7,7 @@ import { PlayerProvider } from "@/context/PlayerContext";
 
 export const metadata: Metadata = {
   title: "RDR",
-  description: "Ouça rádios do mundo todo, simples e rápido.",
-};
+  };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
