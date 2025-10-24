@@ -82,13 +82,12 @@ export default function FavoritosPage() {
       </p>
 
       {/* Player elegante */}
-      {playing && (
-        <section style={{ marginBottom: 32 }}>
-          <ElegantPlayer 
-  streamUrl={playing.url}
-  stationName={playing.station.name}
-  logoUrl={playing.station.logo_url || undefined}
-/>
+      {/* Player local removido — usamos o player persistente no layout */}
+{playing && (
+  <section style={{ marginBottom: 32 }}>
+    <button onClick={() => setPlaying(null)} className="backlink">✕ Fechar</button>
+  </section>
+)}
           <button
             onClick={() => setPlaying(null)}
             className="backlink"
