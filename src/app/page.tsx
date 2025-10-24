@@ -31,12 +31,12 @@ export default function Home() {
     <main className="container">
       
 
-      {playing && (
-        <section style={{ marginBottom: 32 }}>
-          <ElegantPlayer src={playing.url} stationName={playing.station.name} stationLogo={playing.station.logo_url || undefined} />
-          <button onClick={() => setPlaying(null)} className="backlink" style={{ marginTop: 16, display: "block", marginLeft: "auto", marginRight: "auto", width: "fit-content" }}>✕ Fechar player</button>
-        </section>
-      )}
+      {/* Player local removido — usamos o player persistente no layout */}
+{playing && (
+  <section style={{ marginBottom: 32 }}>
+    <button onClick={() => setPlaying(null)} className="backlink">✕ Fechar</button>
+  </section>
+)}
 
       <div className="grid">
         {stations.length > 0 ? (
