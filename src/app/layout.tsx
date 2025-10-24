@@ -17,7 +17,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <PlayerProvider>
           <Header />
           {children}
-          {/* ElegantPlayer deverá passar a ler do contexto (ver mais abaixo) */}
           <ElegantPlayer />
           <Footer />
         </PlayerProvider>
