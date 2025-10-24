@@ -349,3 +349,27 @@ button { font-family: inherit; }
     width: 80px;
   }
 }
+
+@media (max-width: 768px) {
+  .elegant-player {
+    padding: 32px 20px;
+  }
+  .player-logo,
+  .player-logo-placeholder {
+    width: 160px;
+    height: 160px;
+  }
+  .player-logo-placeholder {
+    font-size: 72px;
+  }
+  .player-station-name {
+    font-size: 24px;
+  }
+  .control-btn {
+    width: 56px;
+    height: 56px;
+  }
+  .volume-slider {
+    width: 80px;
+  }
+}
