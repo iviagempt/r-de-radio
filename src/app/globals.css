@@ -173,4 +173,16 @@ button { font-family: inherit; }
 .favorite-btn {
   background: linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
   border: 1px solid var(--border); border-radius: 50%;
-  display:flex;
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  transition: all .25s cubic-bezier(.4,0,.2,1); color: var(--text-dim);
+}
+.favorite-btn:hover {
+  transform: scale(1.1);
+  background: linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
+  border-color: rgba(255,255,255,.2); color:#ff6b9d;
+}
+.favorite-btn.active {
+  color:#ff6b9d;
+  background: linear-gradient(135deg, rgba(255,107,157,.15), rgba(255,107,157,.08));
+  border-color: rgba(255,107,157,.3);
+}
