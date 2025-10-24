@@ -12,9 +12,9 @@ export default function AudioPlayer({ src }: { src: string }) {
     if (!audio || !src) return;
 
     let hls: Hls | null = null;
-    const isHls = src.endsWith(".m3u8");
+    const isHls = src.toLowerCase().endsWith(".m3u8");
 
-    // Para aumentar chance de autoplay
+    // Ajuda no autoplay em navegadores modernos
     audio.muted = true;
 
     if (isHls && Hls.isSupported()) {
@@ -27,12 +27,13 @@ export default function AudioPlayer({ src }: { src: string }) {
       });
     } else {
       audio.src = src;
-      audio.load();
       const onCanPlay = () => {
         setReady(true);
         audio.play().catch(() => {});
       };
       audio.addEventListener("canplay", onCanPlay, { once: true });
+      audio.load();
+
       return () => {
         audio.removeEventListener("canplay", onCanPlay);
       };
@@ -53,11 +54,9 @@ export default function AudioPlayer({ src }: { src: string }) {
   return (
     <div>
       <audio ref={audioRef} controls style={{ width: "100%", maxWidth: 640 }} />
-      {ready && (
-        <button onClick={unmute} style={{ marginTop: 8 }}>
-          Ativar som
-        </button>
-      )}
+      <button onClick={unmute} style={{ marginTop: 8 }}>
+        Ativar som
+      </button>
     </div>
   );
 }
